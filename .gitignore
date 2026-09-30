@@ -1,0 +1,20 @@
+node_modules
+dist
+dev-dist
+*.local
+*.log
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+
+# Datos personales: nunca subir fotos ni PDFs de recibos ni respaldos
+*.jpg
+*.jpeg
+*.png
+!public/*.png
+*.heic
+*.webp
+*.pdf
+recibos-respaldo-*.json
+recibos-*.csv
+.env*
