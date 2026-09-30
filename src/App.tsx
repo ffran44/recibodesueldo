@@ -14,7 +14,7 @@ const Preguntar = lazy(() => import('./pantallas/Preguntar').then((m) => ({ defa
 const PESTAÑAS: { ruta: string; nombre: string; icono: NombreIcono; clase?: string }[] = [
   { ruta: '', nombre: 'Recibos', icono: 'recibos' },
   { ruta: 'analisis', nombre: 'Análisis', icono: 'grafico' },
-  { ruta: 'escanear', nombre: 'Escanear', icono: 'camara', clase: 'escanear' },
+  { ruta: 'escanear', nombre: 'Cargar', icono: 'subir', clase: 'escanear' },
   { ruta: 'preguntar', nombre: 'Preguntar', icono: 'preguntar' },
   { ruta: 'ajustes', nombre: 'Ajustes', icono: 'ajustes' },
 ]
@@ -50,8 +50,17 @@ export default function App() {
         <Suspense fallback={<p className="nota">Cargando…</p>}>{pantalla}</Suspense>
       </main>
       <nav className="barra" aria-label="Secciones">
+        <a href="#/" className="marca">
+          <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" width={28} height={28} />
+          <span>Mis recibos</span>
+        </a>
         {PESTAÑAS.map((p) => (
-          <a key={p.ruta} href={`#/${p.ruta}`} className={p.clase} aria-current={seccion === p.ruta || (p.ruta === '' && seccion === 'recibo') ? 'page' : undefined}>
+          <a
+            key={p.ruta}
+            href={`#/${p.ruta}`}
+            className={p.clase}
+            aria-current={seccion === p.ruta || (p.ruta === '' && seccion === 'recibo') ? 'page' : undefined}
+          >
             <span>
               <Icono nombre={p.icono} />
             </span>

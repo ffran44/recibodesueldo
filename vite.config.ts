@@ -15,7 +15,8 @@ export default defineConfig({
       srcDir: 'src',
       filename: 'sw.ts',
       registerType: 'autoUpdate',
-      injectManifest: { globPatterns: ['**/*.{js,css,html,svg,png,webmanifest}'] },
+      // El lector de PDF pesa 1,2 MB: se descarga recién la primera vez que cargás un PDF
+      injectManifest: { globPatterns: ['**/*.{js,css,html,svg,png,webmanifest}'], globIgnores: ['**/pdf.worker*'] },
       manifest: {
         name: 'Mis recibos de sueldo',
         short_name: 'Recibos',

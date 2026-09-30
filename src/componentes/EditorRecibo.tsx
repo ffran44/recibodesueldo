@@ -41,12 +41,14 @@ export function EditorRecibo({
   onCancelar,
   guardando,
   aviso,
+  textoCancelar = 'Cancelar',
 }: {
   inicial: DatosRecibo & { notas?: string }
   onGuardar: (datos: DatosRecibo & { notas: string }) => void
   onCancelar: () => void
   guardando?: boolean
   aviso?: string | null
+  textoCancelar?: string
 }) {
   const [d, setD] = useState<DatosRecibo & { notas: string }>(() => ({ notas: '', ...structuredClone(inicial) }))
   const chequeos = useMemo(() => auditar(d).filter((c) => c.id.startsWith('suma') || c.id === 'neto' || c.id === 'letras'), [d])
@@ -175,7 +177,7 @@ export function EditorRecibo({
       <div className="acciones">
         {!valido && <span className="nota">Completá período y empleador para guardar.</span>}
         <button type="button" className="boton secundario" onClick={onCancelar}>
-          Cancelar
+          {textoCancelar}
         </button>
         <button className="boton" disabled={!valido || guardando}>
           {guardando ? 'Guardando…' : 'Guardar recibo'}

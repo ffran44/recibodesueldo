@@ -40,7 +40,14 @@ function Grafico({ datos, series, formato }: { datos: object[]; series: { clave:
       <ResponsiveContainer width="100%" height={220}>
         <LineChart data={datos} margin={{ top: 8, right: 12, bottom: 0, left: 0 }}>
           <CartesianGrid stroke={tk['--regla']} vertical={false} />
-          <XAxis dataKey="periodo" tickFormatter={(p: string) => nombrePeriodo(p, true)} stroke={tk['--tinta-3']} tickLine={false} fontSize={11} minTickGap={16} />
+          <XAxis
+            dataKey="periodo"
+            tickFormatter={(p: string) => nombrePeriodo(p, true)}
+            stroke={tk['--tinta-3']}
+            tickLine={false}
+            fontSize={11}
+            minTickGap={16}
+          />
           <YAxis tickFormatter={formato} stroke={tk['--tinta-3']} tickLine={false} axisLine={false} fontSize={11} width={52} />
           <Tooltip content={Globo} cursor={{ stroke: tk['--tinta-3'], strokeDasharray: '3 3' }} />
           {series.map((s) => (
@@ -67,26 +74,26 @@ function TablaSerie({ serie }: { serie: PuntoSerie[] }) {
     <details className="ver-tabla">
       <summary className="nota">Ver como tabla</summary>
       <div className="desplazable">
-      <table className="tabla hoja">
-        <thead>
-          <tr>
-            <th scope="col">Mes</th>
-            <th scope="col">Neto</th>
-            <th scope="col">En pesos de hoy</th>
-            <th scope="col">US$ oficial</th>
-          </tr>
-        </thead>
-        <tbody>
-          {serie.map((p) => (
-            <tr key={p.periodo}>
-              <td>{nombrePeriodo(p.periodo, true)}</td>
-              <td className="cifra">{pesosCorto(p.neto)}</td>
-              <td className="cifra">{pesosCorto(p.netoReal)}</td>
-              <td className="cifra">{p.usdOficial ? Math.round(p.usdOficial) : '—'}</td>
+        <table className="tabla hoja">
+          <thead>
+            <tr>
+              <th scope="col">Mes</th>
+              <th scope="col">Neto</th>
+              <th scope="col">En pesos de hoy</th>
+              <th scope="col">US$ oficial</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {serie.map((p) => (
+              <tr key={p.periodo}>
+                <td>{nombrePeriodo(p.periodo, true)}</td>
+                <td className="cifra">{pesosCorto(p.neto)}</td>
+                <td className="cifra">{pesosCorto(p.netoReal)}</td>
+                <td className="cifra">{p.usdOficial ? Math.round(p.usdOficial) : '—'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </details>
   )
@@ -134,7 +141,9 @@ export function Analisis() {
         {eco.cargando && <span className="nota">Actualizando índices…</span>}
       </header>
 
-      {eco.errores > 0 && !eco.cargando && <p className="aviso">No se pudieron descargar algunos índices (INDEC o dólar). Se muestran los últimos guardados, si hay.</p>}
+      {eco.errores > 0 && !eco.cargando && (
+        <p className="aviso">No se pudieron descargar algunos índices (INDEC o dólar). Se muestran los últimos guardados, si hay.</p>
+      )}
 
       {(anual ?? total) && (
         <section className="veredicto hoja">
@@ -147,85 +156,93 @@ export function Analisis() {
                 </span>
                 <p className={`veredicto-cifra cifra ${c.variacionReal < 0 ? 'descuento' : 'haber'}`}>{porcentaje(c.variacionReal, true)}</p>
                 <p className="nota">
-                  {c.variacionReal >= 0 ? 'Le ganaste a la inflación' : 'Perdiste contra la inflación'}: tu neto subió {porcentaje(c.variacionNominal)} y los precios {porcentaje(c.inflacion)}.
+                  {c.variacionReal >= 0 ? 'Le ganaste a la inflación' : 'Perdiste contra la inflación'}: tu neto subió {porcentaje(c.variacionNominal)} y los
+                  precios {porcentaje(c.inflacion)}.
                 </p>
               </div>
             ))}
         </section>
       )}
 
-      {serie.length > 1 && (
-        <section className="seccion">
-          <span className="rotulo">Neto: lo que cobraste vs. lo que vale hoy</span>
-          <Grafico
-            datos={serie}
-            formato={(n) => compacto.format(n)}
-            series={[
-              { clave: 'neto', nombre: 'Cobrado', color: tk['--serie-nominal'] },
-              ...(eco.ipc ? [{ clave: 'netoReal', nombre: `En pesos de ${ultimoIpc ? nombrePeriodo(ultimoIpc, true) : 'hoy'}`, color: tk['--serie-real'] }] : []),
-            ]}
-          />
-          <p className="nota">
-            Ajustado por IPC nacional (INDEC). Si la línea violeta baja, tu sueldo compra menos que antes.
-          </p>
-          <TablaSerie serie={serie} />
-        </section>
-      )}
+      <div className="analisis-grilla">
+        {serie.length > 1 && (
+          <section className="seccion">
+            <span className="rotulo">Neto: lo que cobraste vs. lo que vale hoy</span>
+            <Grafico
+              datos={serie}
+              formato={(n) => compacto.format(n)}
+              series={[
+                { clave: 'neto', nombre: 'Cobrado', color: tk['--serie-nominal'] },
+                ...(eco.ipc
+                  ? [{ clave: 'netoReal', nombre: `En pesos de ${ultimoIpc ? nombrePeriodo(ultimoIpc, true) : 'hoy'}`, color: tk['--serie-real'] }]
+                  : []),
+              ]}
+            />
+            <p className="nota">Ajustado por IPC nacional (INDEC). Si la línea violeta baja, tu sueldo compra menos que antes.</p>
+            <TablaSerie serie={serie} />
+          </section>
+        )}
 
-      {serie.length > 1 && (eco.oficial || eco.blue) && (
-        <section className="seccion">
-          <div className="fila-titulo">
-            <span className="rotulo">Neto en dólares</span>
-            <div className="segmentos" role="group" aria-label="Tipo de dólar">
-              <button aria-pressed={dolar === 'usdOficial'} onClick={() => setDolar('usdOficial')}>
-                Oficial
-              </button>
-              <button aria-pressed={dolar === 'usdBlue'} onClick={() => setDolar('usdBlue')}>
-                Blue
-              </button>
+        {serie.length > 1 && (eco.oficial || eco.blue) && (
+          <section className="seccion">
+            <div className="fila-titulo">
+              <span className="rotulo">Neto en dólares</span>
+              <div className="segmentos" role="group" aria-label="Tipo de dólar">
+                <button aria-pressed={dolar === 'usdOficial'} onClick={() => setDolar('usdOficial')}>
+                  Oficial
+                </button>
+                <button aria-pressed={dolar === 'usdBlue'} onClick={() => setDolar('usdBlue')}>
+                  Blue
+                </button>
+              </div>
             </div>
-          </div>
-          <Grafico datos={serie} formato={(n) => `${Math.round(n)}`} series={[{ clave: dolar, nombre: dolar === 'usdOficial' ? 'Oficial' : 'Blue', color: tk['--serie-nominal'] }]} />
-          <p className="nota">Cotización de venta del día de cobro (ArgentinaDatos).</p>
-        </section>
-      )}
+            <Grafico
+              datos={serie}
+              formato={(n) => `${Math.round(n)}`}
+              series={[{ clave: dolar, nombre: dolar === 'usdOficial' ? 'Oficial' : 'Blue', color: tk['--serie-nominal'] }]}
+            />
+            <p className="nota">Cotización de venta del día de cobro (ArgentinaDatos).</p>
+          </section>
+        )}
 
-      {sac && (
-        <section className="seccion">
-          <span className="rotulo">Aguinaldo estimado · {sac.semestre}</span>
-          <div className="hoja tarjeta">
-            <p className="cifra grande">{pesos(sac.netoEstimado)}</p>
-            <p className="nota">
-              Bruto {pesos(sac.bruto)}: la mitad de tu mejor remunerativo del semestre ({pesos(sac.mejorRemuneracion)}, {nombrePeriodo(sac.mejorPeriodo)})
-              {sac.meses < 6 ? `, proporcional a ${sac.meses} meses` : ''}. Neto estimado con tus descuentos habituales. Se paga con los haberes de{' '}
-              {nombrePeriodo(sac.mesDePago)}.
-            </p>
-          </div>
-        </section>
-      )}
-
-      {nombresConceptos.length > 0 && (
-        <section className="seccion">
-          <div className="fila-titulo">
-            <span className="rotulo">Evolución de un concepto</span>
-            <select className="entrada compacta" value={elegido} onChange={(e) => setConcepto(e.target.value)} aria-label="Concepto">
-              {nombresConceptos.map((n) => (
-                <option key={n}>{n}</option>
-              ))}
-            </select>
-          </div>
-          {evolucion.length > 1 ? (
-            <>
-              <Grafico datos={evolucion} formato={(n) => compacto.format(n)} series={[{ clave: 'importe', nombre: elegido, color: tk['--serie-nominal'] }]} />
+        {sac && (
+          <section className="seccion">
+            <span className="rotulo">Aguinaldo estimado · {sac.semestre}</span>
+            <div className="hoja tarjeta">
+              <p className="cifra grande">{pesos(sac.netoEstimado)}</p>
               <p className="nota">
-                De {pesos(evolucion[0].importe)} a {pesos(evolucion.at(-1)!.importe)} ({porcentaje(evolucion.at(-1)!.importe / evolucion[0].importe - 1, true)}).
+                Bruto {pesos(sac.bruto)}: la mitad de tu mejor remunerativo del semestre ({pesos(sac.mejorRemuneracion)}, {nombrePeriodo(sac.mejorPeriodo)})
+                {sac.meses < 6 ? `, proporcional a ${sac.meses} meses` : ''}. Neto estimado con tus descuentos habituales. Se paga con los haberes de{' '}
+                {nombrePeriodo(sac.mesDePago)}.
               </p>
-            </>
-          ) : (
-            <p className="nota">Hace falta más de un recibo con este concepto para ver su evolución.</p>
-          )}
-        </section>
-      )}
+            </div>
+          </section>
+        )}
+
+        {nombresConceptos.length > 0 && (
+          <section className="seccion">
+            <div className="fila-titulo">
+              <span className="rotulo">Evolución de un concepto</span>
+              <select className="entrada compacta" value={elegido} onChange={(e) => setConcepto(e.target.value)} aria-label="Concepto">
+                {nombresConceptos.map((n) => (
+                  <option key={n}>{n}</option>
+                ))}
+              </select>
+            </div>
+            {evolucion.length > 1 ? (
+              <>
+                <Grafico datos={evolucion} formato={(n) => compacto.format(n)} series={[{ clave: 'importe', nombre: elegido, color: tk['--serie-nominal'] }]} />
+                <p className="nota">
+                  De {pesos(evolucion[0].importe)} a {pesos(evolucion.at(-1)!.importe)} (
+                  {porcentaje(evolucion.at(-1)!.importe / evolucion[0].importe - 1, true)}).
+                </p>
+              </>
+            ) : (
+              <p className="nota">Hace falta más de un recibo con este concepto para ver su evolución.</p>
+            )}
+          </section>
+        )}
+      </div>
 
       {ultimoMensual && (
         <section className="seccion">

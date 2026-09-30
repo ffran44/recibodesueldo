@@ -1,6 +1,8 @@
 # Mis recibos de sueldo
 
-PWA personal para registrar y auditar recibos de sueldo argentinos. Ver README.md.
+PWA personal, pensada para PC, para registrar y auditar recibos de sueldo argentinos. Ver README.md.
+
+Flujo de lectura: OCR local (`lib/ocr.ts`) → `ocultarDatosPersonales` (`lib/ocultar.ts`) → la persona revisa el texto → Gemini gratis o Claude (`lib/ia.ts`) → editor con auditoría en vivo.
 
 ## Reglas
 
@@ -8,7 +10,8 @@ PWA personal para registrar y auditar recibos de sueldo argentinos. Ver README.m
 - Código, nombres y UI en español rioplatense (vos). Montos en formato es-AR.
 - La lógica de negocio va en `src/lib/` como funciones puras con tests (`*.test.ts`, Vitest). Las pantallas solo componen.
 - Colores solo desde los tokens de `src/index.css` (modo claro y oscuro). En Recharts usar `useTokens()` porque los atributos SVG no aceptan `var()`.
-- Llamadas a Claude solo en `src/lib/claude.ts` con `@anthropic-ai/sdk`.
+- Nunca mandar la foto ni datos personales a servicios externos: solo el texto ya pasado por `ocultarDatosPersonales`. Cualquier cambio ahí va con test.
+- Llamadas a modelos solo en `src/lib/gemini.ts` / `src/lib/claude.ts`, con el esquema de `src/lib/esquema.ts`.
 
 ## Comandos
 

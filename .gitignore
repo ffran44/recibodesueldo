@@ -18,3 +18,4 @@ dev-dist
 recibos-respaldo-*.json
 recibos-*.csv
 .env*
+*.traineddata

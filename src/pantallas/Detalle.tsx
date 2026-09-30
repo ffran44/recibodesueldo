@@ -19,7 +19,11 @@ function Foto({ adjunto }: { adjunto: Adjunto }) {
   if (!url) return null
   return (
     <a href={url} target="_blank" rel="noreferrer" className="foto">
-      {adjunto.tipo === 'application/pdf' ? <span className="pdf rotulo">Abrir PDF</span> : <img src={url} alt={`Foto del recibo: ${adjunto.nombre}`} loading="lazy" />}
+      {adjunto.tipo === 'application/pdf' ? (
+        <span className="pdf rotulo">Abrir PDF</span>
+      ) : (
+        <img src={url} alt={`Foto del recibo: ${adjunto.nombre}`} loading="lazy" />
+      )}
     </a>
   )
 }
@@ -88,129 +92,134 @@ export function Detalle({ id, editando }: { id: string; editando: boolean }) {
         </a>
       </header>
 
-      <HojaRecibo recibo={recibo} chequeos={chequeos} />
+      <div className="dos-columnas">
+        <div>
+          <HojaRecibo recibo={recibo} chequeos={chequeos} />
 
-      <section className="seccion">
-        <span className="rotulo">Auditoría</span>
-        <ListaChequeos chequeos={chequeos} />
-      </section>
-
-      {(netoHoy || oficial) && (
-        <section className="seccion">
-          <span className="rotulo">Cuánto vale este sueldo</span>
-          <dl className="valores hoja">
-            {netoHoy != null && ultimoIpc && ultimoIpc !== recibo.periodo && (
-              <div>
-                <dt>En pesos de {nombrePeriodo(ultimoIpc)}</dt>
-                <dd className="cifra">{pesos(netoHoy)}</dd>
-              </div>
-            )}
-            {oficial && (
-              <div>
-                <dt>Dólar oficial ({pesos(oficial)})</dt>
-                <dd className="cifra">US$ {(t.neto / oficial).toFixed(0)}</dd>
-              </div>
-            )}
-            {blue && (
-              <div>
-                <dt>Dólar blue ({pesos(blue)})</dt>
-                <dd className="cifra">US$ {(t.neto / blue).toFixed(0)}</dd>
-              </div>
-            )}
-            {recibo.costoEmpleador && (
-              <div>
-                <dt>Le costás a tu empleador</dt>
-                <dd className="cifra">
-                  {pesos(recibo.costoEmpleador)} <span className="nota">· cobrás el {porcentaje(t.neto / recibo.costoEmpleador)}</span>
-                </dd>
-              </div>
-            )}
-          </dl>
-        </section>
-      )}
-
-      {COLUMNAS.map(({ tipo, nombre, clase }) => {
-        const lista = recibo.conceptos.filter((c) => c.tipo === tipo)
-        if (!lista.length) return null
-        return (
-          <section className="seccion" key={tipo}>
-            <span className="rotulo">{nombre}</span>
-            <table className="tabla hoja">
-              <thead>
-                <tr>
-                  <th scope="col">Concepto</th>
-                  <th scope="col">Importe</th>
-                  {anterior && <th scope="col">vs {nombrePeriodo(anterior.periodo, true)}</th>}
-                </tr>
-              </thead>
-              <tbody>
-                {lista.map((c, i) => {
-                  const antes = previos.get(clave(c.nombre))
-                  return (
-                    <tr key={i}>
-                      <td>{c.nombre}</td>
-                      <td className={`cifra ${clase}`}>{pesos(c.importe)}</td>
-                      {anterior && <td className="cifra nota">{antes ? porcentaje(c.importe / antes - 1, true) : 'nuevo'}</td>}
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
+          <section className="seccion">
+            <span className="rotulo">Auditoría</span>
+            <ListaChequeos chequeos={chequeos} />
           </section>
-        )
-      })}
 
-      <section className="seccion">
-        <span className="rotulo">Datos</span>
-        <dl className="valores hoja">
-          <div>
-            <dt>Fecha de pago</dt>
-            <dd>{fechaLarga(recibo.fechaPago)}</dd>
-          </div>
-          {recibo.banco && (
-            <div>
-              <dt>Banco</dt>
-              <dd>{recibo.banco}</dd>
-            </div>
+          {(netoHoy || oficial) && (
+            <section className="seccion">
+              <span className="rotulo">Cuánto vale este sueldo</span>
+              <dl className="valores hoja">
+                {netoHoy != null && ultimoIpc && ultimoIpc !== recibo.periodo && (
+                  <div>
+                    <dt>En pesos de {nombrePeriodo(ultimoIpc)}</dt>
+                    <dd className="cifra">{pesos(netoHoy)}</dd>
+                  </div>
+                )}
+                {oficial && (
+                  <div>
+                    <dt>Dólar oficial ({pesos(oficial)})</dt>
+                    <dd className="cifra">US$ {(t.neto / oficial).toFixed(0)}</dd>
+                  </div>
+                )}
+                {blue && (
+                  <div>
+                    <dt>Dólar blue ({pesos(blue)})</dt>
+                    <dd className="cifra">US$ {(t.neto / blue).toFixed(0)}</dd>
+                  </div>
+                )}
+                {recibo.costoEmpleador && (
+                  <div>
+                    <dt>Le costás a tu empleador</dt>
+                    <dd className="cifra">
+                      {pesos(recibo.costoEmpleador)} <span className="nota">· cobrás el {porcentaje(t.neto / recibo.costoEmpleador)}</span>
+                    </dd>
+                  </div>
+                )}
+              </dl>
+            </section>
           )}
-          {recibo.empleado.categoria && (
-            <div>
-              <dt>Categoría</dt>
-              <dd>{recibo.empleado.categoria}</dd>
-            </div>
-          )}
-          {recibo.empleado.fechaIngreso && (
-            <div>
-              <dt>Ingreso</dt>
-              <dd>
-                {fechaLarga(recibo.empleado.fechaIngreso)}
-                <span className="nota">
-                  {' '}
-                  · hoy {antiguedad(recibo.empleado.fechaIngreso).anios} años y {antiguedad(recibo.empleado.fechaIngreso).meses} meses
-                </span>
-              </dd>
-            </div>
-          )}
-          {recibo.empleado.obraSocial && (
-            <div>
-              <dt>Obra social</dt>
-              <dd>{recibo.empleado.obraSocial}</dd>
-            </div>
-          )}
-        </dl>
-        {recibo.notas && <p className="nota">{recibo.notas}</p>}
-      </section>
+        </div>
+        <div>
+          {COLUMNAS.map(({ tipo, nombre, clase }) => {
+            const lista = recibo.conceptos.filter((c) => c.tipo === tipo)
+            if (!lista.length) return null
+            return (
+              <section className="seccion" key={tipo}>
+                <span className="rotulo">{nombre}</span>
+                <table className="tabla hoja">
+                  <thead>
+                    <tr>
+                      <th scope="col">Concepto</th>
+                      <th scope="col">Importe</th>
+                      {anterior && <th scope="col">vs {nombrePeriodo(anterior.periodo, true)}</th>}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {lista.map((c, i) => {
+                      const antes = previos.get(clave(c.nombre))
+                      return (
+                        <tr key={i}>
+                          <td>{c.nombre}</td>
+                          <td className={`cifra ${clase}`}>{pesos(c.importe)}</td>
+                          {anterior && <td className="cifra nota">{antes ? porcentaje(c.importe / antes - 1, true) : 'nuevo'}</td>}
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </section>
+            )
+          })}
 
-      {adjuntos && adjuntos.length > 0 && (
-        <section className="seccion">
-          <span className="rotulo">Original</span>
-          <div className="fotos">
-            {adjuntos.map((a) => (
-              <Foto key={a.id} adjunto={a} />
-            ))}
-          </div>
-        </section>
-      )}
+          <section className="seccion">
+            <span className="rotulo">Datos</span>
+            <dl className="valores hoja">
+              <div>
+                <dt>Fecha de pago</dt>
+                <dd>{fechaLarga(recibo.fechaPago)}</dd>
+              </div>
+              {recibo.banco && (
+                <div>
+                  <dt>Banco</dt>
+                  <dd>{recibo.banco}</dd>
+                </div>
+              )}
+              {recibo.empleado.categoria && (
+                <div>
+                  <dt>Categoría</dt>
+                  <dd>{recibo.empleado.categoria}</dd>
+                </div>
+              )}
+              {recibo.empleado.fechaIngreso && (
+                <div>
+                  <dt>Ingreso</dt>
+                  <dd>
+                    {fechaLarga(recibo.empleado.fechaIngreso)}
+                    <span className="nota">
+                      {' '}
+                      · hoy {antiguedad(recibo.empleado.fechaIngreso).anios} años y {antiguedad(recibo.empleado.fechaIngreso).meses} meses
+                    </span>
+                  </dd>
+                </div>
+              )}
+              {recibo.empleado.obraSocial && (
+                <div>
+                  <dt>Obra social</dt>
+                  <dd>{recibo.empleado.obraSocial}</dd>
+                </div>
+              )}
+            </dl>
+            {recibo.notas && <p className="nota">{recibo.notas}</p>}
+          </section>
+
+          {adjuntos && adjuntos.length > 0 && (
+            <section className="seccion">
+              <span className="rotulo">Original</span>
+              <div className="fotos">
+                {adjuntos.map((a) => (
+                  <Foto key={a.id} adjunto={a} />
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+      </div>
 
       <section className="seccion">
         {confirmarBorrado ? (

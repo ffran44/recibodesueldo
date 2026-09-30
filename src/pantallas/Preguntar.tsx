@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { preguntar, SinApiKey } from '../lib/claude'
+import { preguntar, SinApiKey } from '../lib/ia'
 import { cotizacionAl } from '../lib/analysis'
 import { useRecibos } from '../lib/useDatos'
 import { useEconomia, type Economia } from '../lib/useEconomia'
-import { obtenerApiKey } from '../lib/settings'
+import { obtenerApiKey, obtenerProveedor, PROVEEDORES } from '../lib/settings'
 
 const SUGERENCIAS = [
   '¿Cuánto aumentó mi básico en el último año?',
@@ -70,7 +70,7 @@ export function Preguntar() {
         <p className="nota">Todavía no hay recibos para consultar.</p>
       ) : !obtenerApiKey() ? (
         <p className="aviso">
-          Para hacer preguntas necesitás tu API key en <a href="#/ajustes">Ajustes</a>.
+          Para hacer preguntas necesitás tu API key de {PROVEEDORES[obtenerProveedor()].nombre} en <a href="#/ajustes">Ajustes</a>.
         </p>
       ) : (
         <>
@@ -105,7 +105,7 @@ export function Preguntar() {
               Preguntar
             </button>
           </form>
-          <p className="nota">Se envían los números de tus recibos (sin fotos ni CUIL) a Anthropic para responder.</p>
+          <p className="nota">Para responder se envían los conceptos e importes de tus recibos (sin fotos, nombre ni CUIL) a {PROVEEDORES[obtenerProveedor()].nombre}.</p>
         </>
       )}
     </>
