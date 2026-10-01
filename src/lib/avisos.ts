@@ -12,7 +12,10 @@ import {
   type AvisoCobro,
 } from './avisoCobro'
 import { guardarAjuste, leerAjuste, recibosOrdenados } from './db'
-import { cargarFeriados } from './econ'
+import { cargarFeriados, cargarIpc } from './econ'
+import { AJUSTE_INFLACION_NOTIFICADA, AJUSTE_INFLACION_VISTA, avisoInflacion, textoAvisoInflacion, type AvisoInflacion } from './avisoInflacion'
+import { ultimoPeriodo } from './analysis'
+import { useEconomia } from './useEconomia'
 
 /** Fecha local YYYY-MM-DD (a la noche, la fecha UTC ya es la del día siguiente) */
 export const hoyLocal = () => new Date().toLocaleDateString('sv-SE')
@@ -51,6 +54,52 @@ export async function ocultarAviso(aviso: AvisoCobro, dias?: number) {
   const ocultos = (await leerAjuste<Record<string, string>>(AJUSTE_OCULTOS)) ?? {}
   ocultos[claveAviso(aviso)] = dias ? sumarDias(hoyLocal(), dias - 1) : '9999-12-31'
   await guardarAjuste(AJUSTE_OCULTOS, ocultos)
+}
+
+// ---------- Inflación nueva ----------
+
+/** La primera vez se toma como visto el último dato publicado: solo se avisa de lo que salga desde ahora */
+async function vistaInflacion(ultimo: string) {
+  let vista = await leerAjuste<string>(AJUSTE_INFLACION_VISTA)
+  if (!vista) {
+    vista = ultimo
+    await guardarAjuste(AJUSTE_INFLACION_VISTA, ultimo)
+    await guardarAjuste(AJUSTE_INFLACION_NOTIFICADA, ultimo)
+  }
+  return vista
+}
+
+export function useAvisoInflacion(): AvisoInflacion | null {
+  const { ipc } = useEconomia()
+  const recibos = useLiveQuery(recibosOrdenados, [])
+  const vista = useLiveQuery(() => leerAjuste<string>(AJUSTE_INFLACION_VISTA), [])
+  const ultimo = ipc ? ultimoPeriodo(ipc) : null
+
+  useEffect(() => {
+    if (ultimo) void vistaInflacion(ultimo)
+  }, [ultimo])
+
+  if (!ipc || !recibos || !vista) return null
+  return avisoInflacion(ipc, recibos, vista)
+}
+
+export const marcarInflacionVista = async (periodo: string) => {
+  await guardarAjuste(AJUSTE_INFLACION_VISTA, periodo)
+  await guardarAjuste(AJUSTE_INFLACION_NOTIFICADA, periodo)
+}
+
+async function notificarInflacion(mostrar: (titulo: string, opciones: NotificationOptions) => Promise<void>) {
+  const ipc = await cargarIpc()
+  const ultimo = ultimoPeriodo(ipc)
+  if (!ultimo) return
+  await vistaInflacion(ultimo)
+  const notificada = await leerAjuste<string>(AJUSTE_INFLACION_NOTIFICADA)
+  if (notificada && ultimo <= notificada) return
+  const aviso = avisoInflacion(ipc, await recibosOrdenados(), notificada)
+  if (!aviso) return
+  const { titulo, cuerpo } = textoAvisoInflacion(aviso)
+  await mostrar(titulo, { body: cuerpo, tag: `inflacion-${aviso.periodo}`, icon: `${import.meta.env.BASE_URL}icon-192.png`, data: { url: `${import.meta.env.BASE_URL}#/` } })
+  await guardarAjuste(AJUSTE_INFLACION_NOTIFICADA, aviso.periodo)
 }
 
 // ---------- Notificaciones de Windows ----------
@@ -92,18 +141,21 @@ export async function revisarYNotificar() {
   const hoy = hoyLocal()
   const visibles = avisosVisibles(avisosDeCobro(await recibosOrdenados(), hoy, await feriadosDelAnio(hoy)), (await leerAjuste(AJUSTE_OCULTOS)) ?? {}, hoy)
   const notificados = (await leerAjuste<Record<string, string>>(AJUSTE_NOTIFICADOS)) ?? {}
-  const pendientes = avisosANotificar(visibles, notificados, hoy)
-  if (!pendientes.length) return
-
   const registro = await navigator.serviceWorker?.getRegistration()
-  for (const aviso of pendientes) {
-    const { titulo, cuerpo } = textoAviso(aviso)
-    const opciones = { body: cuerpo, tag: `cobro-${claveAviso(aviso)}`, icon: `${import.meta.env.BASE_URL}icon-192.png`, data: { url: `${import.meta.env.BASE_URL}#/` } }
+  const mostrar = async (titulo: string, opciones: NotificationOptions) => {
     if (registro) await registro.showNotification(titulo, opciones)
     else new Notification(titulo, opciones)
+  }
+
+  for (const aviso of avisosANotificar(visibles, notificados, hoy)) {
+    const { titulo, cuerpo } = textoAviso(aviso)
+    await mostrar(titulo, { body: cuerpo, tag: `cobro-${claveAviso(aviso)}`, icon: `${import.meta.env.BASE_URL}icon-192.png`, data: { url: `${import.meta.env.BASE_URL}#/` } })
     notificados[claveAviso(aviso)] = hoy
   }
   await guardarAjuste(AJUSTE_NOTIFICADOS, notificados)
+
+  // Sin conexión no hay dato nuevo de INDEC: no es un error
+  await notificarInflacion(mostrar).catch(() => {})
 }
 
 /** Con la app abierta: revisa al abrir, al volver a la pestaña y cada hora */

@@ -1,6 +1,7 @@
 import { HojaRecibo } from '../componentes/HojaRecibo'
 import { Titulo } from '../componentes/Titulo'
 import { AvisosCobro } from '../componentes/AvisosCobro'
+import { AvisoInflacion } from '../componentes/AvisoInflacion'
 import { Icono } from '../componentes/Icono'
 import { totalesEfectivos } from '../lib/audit'
 import { anteriorDe } from '../lib/db'
@@ -48,6 +49,7 @@ export function Inicio() {
       </header>
 
       <AvisosCobro />
+      <AvisoInflacion />
 
       {respaldoSoportado && !respaldo.carpeta && (
         <p className="aviso aviso-global">

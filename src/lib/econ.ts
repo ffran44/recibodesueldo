@@ -1,17 +1,9 @@
 import { conCache } from './db'
+import { descargarIpc } from './ipc'
 import type { SerieDiaria, SerieMensual } from './analysis'
 
-// IPC Nacional nivel general, base dic-2016 (INDEC vía datos.gob.ar)
-const IPC_URL = 'https://apis.datos.gob.ar/series/api/series/?ids=148.3_INIVELNAL_DICI_M_26&limit=1000&format=json'
-
 export async function cargarIpc(): Promise<SerieMensual> {
-  const filas = await conCache('ipc', 24, async () => {
-    const res = await fetch(IPC_URL)
-    if (!res.ok) throw new Error(`INDEC respondió ${res.status}`)
-    const json = (await res.json()) as { data: [string, number | null][] }
-    return json.data.filter(([, v]) => v != null).map(([fecha, v]) => [fecha.slice(0, 7), v] as [string, number])
-  })
-  return new Map(filas)
+  return new Map(await conCache('ipc', 24, descargarIpc))
 }
 
 export type Casa = 'oficial' | 'blue' | 'bolsa'

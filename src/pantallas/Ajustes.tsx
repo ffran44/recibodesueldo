@@ -114,7 +114,7 @@ export function Ajustes() {
         </section>
 
         <section className="hoja tarjeta pila">
-          <span className="rotulo">Aviso de cobro</span>
+          <span className="rotulo">Avisos</span>
           <AjustesAvisos />
         </section>
 

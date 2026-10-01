@@ -1895,3 +1895,8 @@ code {
 .aviso-cobro .acciones {
   margin-top: 4px;
 }
+
+.aviso-cobro.aviso-inflacion {
+  --color: var(--celeste);
+  margin-bottom: 16px;
+}

@@ -5,6 +5,8 @@ import { CacheFirst } from 'workbox-strategies'
 import { ExpirationPlugin } from 'workbox-expiration'
 import { AJUSTE_ACTIVOS, AJUSTE_NOTIFICADOS, AJUSTE_OCULTOS, avisosANotificar, avisosDeCobro, avisosVisibles, claveAviso, textoAviso } from './lib/avisoCobro'
 import type { DatosRecibo } from './lib/types'
+import { AJUSTE_INFLACION_NOTIFICADA, AJUSTE_INFLACION_VISTA, avisoInflacion, textoAvisoInflacion } from './lib/avisoInflacion'
+import { descargarIpc } from './lib/ipc'
 
 declare const self: ServiceWorkerGlobalScope
 
@@ -46,7 +48,7 @@ self.addEventListener('message', (event) => {
   if (event.data?.type === 'SKIP_WAITING') self.skipWaiting()
 })
 
-// ---------- Aviso de cobro en segundo plano (Periodic Background Sync, app instalada) ----------
+// ---------- Avisos de cobro e inflación en segundo plano (Periodic Background Sync, app instalada) ----------
 
 interface EventoSyncPeriodico extends ExtendableEvent {
   tag: string
@@ -94,6 +96,22 @@ async function revisarCobrosEnSegundoPlano() {
       notificados[claveAviso(aviso)] = hoy
     }
     await promesa(base.transaction('ajustes', 'readwrite').objectStore('ajustes').put({ clave: AJUSTE_NOTIFICADOS, valor: notificados }))
+
+    // Inflación nueva: solo si la app ya registró qué dato vio la persona
+    const notificada = await ajuste<string>(AJUSTE_INFLACION_NOTIFICADA)
+    if ((await ajuste<string>(AJUSTE_INFLACION_VISTA)) && notificada) {
+      const aviso = avisoInflacion(new Map(await descargarIpc()), recibos, notificada)
+      if (aviso) {
+        const { titulo, cuerpo } = textoAvisoInflacion(aviso)
+        await self.registration.showNotification(titulo, {
+          body: cuerpo,
+          tag: `inflacion-${aviso.periodo}`,
+          icon: `${import.meta.env.BASE_URL}icon-192.png`,
+          data: { url: `${import.meta.env.BASE_URL}#/` },
+        })
+        await promesa(base.transaction('ajustes', 'readwrite').objectStore('ajustes').put({ clave: AJUSTE_INFLACION_NOTIFICADA, valor: aviso.periodo }))
+      }
+    }
   } finally {
     base.close()
   }

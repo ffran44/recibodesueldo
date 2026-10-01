@@ -13,8 +13,8 @@ export function AjustesAvisos() {
   return (
     <div className="pila">
       <p className="nota">
-        Si pasa el 4° día hábil del mes y no cargaste el recibo del mes anterior, te avisamos: puede ser que no te hayan pagado o que te olvidaste de
-        cargarlo. El aviso siempre aparece en Inicio; acá podés sumar una notificación de Windows.
+        Te avisamos en Inicio cuando pasa el 4° día hábil y no cargaste el recibo del mes anterior, y cuando INDEC publica la inflación de un mes nuevo
+        (con cómo le fue a tu sueldo). Acá podés sumar una notificación de Windows para los dos.
       </p>
       <label className="opcion">
         <input
