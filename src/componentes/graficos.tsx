@@ -182,7 +182,7 @@ export function Tarjeta({
   valor: ReactNode
   detalle?: ReactNode
   tono?: 'bien' | 'mal'
-  /** Variable CSS del color de la tarjeta, por ejemplo 'var(--turquesa)' */
+  /** Variable CSS del color de la tarjeta, por ejemplo 'var(--celeste)' */
   color?: string
   icono?: NombreIcono
 }) {

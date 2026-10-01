@@ -1,42 +1,43 @@
 :root {
-  /* Siempre oscuro: fondo azul-violeta profundo, nunca gris neutro */
-  --papel: #110e24;
-  --hoja: #1c1838;
-  --hoja-2: #262046;
-  --tinta: #f3f0ff;
-  --tinta-2: #b9b2d9;
-  --tinta-3: #8a82ae;
-  --regla: #302a55;
+  /* Siempre oscuro, con un tinte verde agua; colores pastel planos, sin degradés */
+  --papel: #121a1c;
+  --hoja: #1a2427;
+  --hoja-2: #223033;
+  --tinta: #e9f3f1;
+  --tinta-2: #a8bcb8;
+  --tinta-3: #82a09a;
+  --regla: #2c3b3f;
 
-  /* Un color por sección */
-  --violeta: #a78bfa;
-  --violeta-fuerte: #8b5cf6;
-  --turquesa: #2dd4bf;
-  --rosa: #f472b6;
-  --ambar: #fbbf24;
-  --celeste: #60a5fa;
-  --acento: var(--violeta);
+  /* Verde agua es el color principal; cada sección tiene su pastel */
+  --agua: #8ee3cf;
+  --agua-fuerte: #6fd3bb;
+  --sobre-agua: #0d2a24;
+  --celeste: #9cc8f5;
+  --rosa: #f5b8cb;
+  --ambar: #f3d98b;
+  --lavanda: #c7b8f5;
+  --acento: var(--agua);
 
   /* Significado */
-  --sello: #c4b5fd;
-  --sello-error: #fb7185;
-  --haber: #4ade80;
-  --descuento: #fb7185;
-  --norem: #fbbf24;
-  --alerta: #fbbf24;
-  --foco: #c4b5fd;
+  --sello: var(--agua);
+  --sello-error: #f5a3b3;
+  --haber: #8fe0b0;
+  --descuento: #f5a3b3;
+  --norem: #f3d98b;
+  --alerta: #f3d98b;
+  --foco: var(--agua);
 
   /* Gráficos (validados para daltonismo sobre --hoja) */
   --serie-real: #9b7bf0;
   --serie-nominal: #109c8c;
   --serie-blue: #c97a22;
-  --serie-ref: #6f6894;
+  --serie-ref: #6f8a85;
   --g-rem: #1fa077;
   --g-norem: #b88a1c;
   --g-desc: #e0566e;
   --div-pos: #1fa077;
   --div-neg: #e0566e;
-  --div-neutro: #262046;
+  --div-neutro: #223033;
 
   --f-display: 'Bricolage Grotesque', 'Segoe UI', sans-serif;
   --f-texto: 'Figtree', 'Segoe UI', system-ui, sans-serif;
@@ -44,7 +45,7 @@
 
   --radio: 14px;
   --radio-chico: 10px;
-  --sombra: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 10px 30px -12px rgb(0 0 0 / 0.6);
+  --sombra: none;
   --barra: 68px;
   color-scheme: dark;
 }
@@ -66,12 +67,6 @@ body {
 
 body {
   min-height: 100dvh;
-  /* Resplandores de color fijos detrás de todo */
-  background-image:
-    radial-gradient(900px 600px at 85% -10%, rgb(139 92 246 / 0.22), transparent 60%),
-    radial-gradient(700px 500px at -10% 30%, rgb(45 212 191 / 0.1), transparent 60%),
-    radial-gradient(800px 600px at 60% 110%, rgb(244 114 182 / 0.1), transparent 60%);
-  background-attachment: fixed;
 }
 
 button,
@@ -118,10 +113,10 @@ a {
 
 /* Cada pantalla toma su color */
 [data-seccion='recibos'] {
-  --acento: var(--violeta);
+  --acento: var(--agua);
 }
 [data-seccion='analisis'] {
-  --acento: var(--turquesa);
+  --acento: var(--celeste);
 }
 [data-seccion='escanear'] {
   --acento: var(--rosa);
@@ -130,7 +125,7 @@ a {
   --acento: var(--ambar);
 }
 [data-seccion='ajustes'] {
-  --acento: var(--celeste);
+  --acento: var(--lavanda);
 }
 
 .app {
@@ -191,12 +186,11 @@ a {
   padding: 0 20px;
   border-radius: 999px;
   border: 0;
-  background: linear-gradient(135deg, var(--violeta-fuerte), #6d28d9);
-  color: #fff;
+  background: var(--agua);
+  color: var(--sobre-agua);
   font-weight: 700;
   cursor: pointer;
   text-decoration: none;
-  box-shadow: 0 6px 20px -8px rgb(139 92 246 / 0.8);
   transition:
     transform 0.12s,
     box-shadow 0.12s,
@@ -204,8 +198,11 @@ a {
 }
 
 .boton:hover:not(:disabled) {
-  filter: brightness(1.1);
-  transform: translateY(-1px);
+  background: var(--agua-fuerte);
+}
+
+.boton.secundario:hover:not(:disabled) {
+  background: var(--regla);
 }
 
 .boton.secundario {
@@ -251,9 +248,9 @@ a {
 .campo select:focus,
 .campo textarea:focus,
 .entrada:focus {
-  border-color: var(--violeta);
+  border-color: var(--agua);
   outline: none;
-  box-shadow: 0 0 0 3px rgb(167 139 250 / 0.25);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--agua) 25%, transparent);
 }
 
 .nota {
@@ -274,8 +271,7 @@ a {
   grid-template-columns: repeat(5, 1fr);
   height: calc(var(--barra) + env(safe-area-inset-bottom));
   padding-bottom: env(safe-area-inset-bottom);
-  background: color-mix(in srgb, var(--hoja) 92%, transparent);
-  backdrop-filter: blur(12px);
+  background: var(--hoja);
   border-top: 1px solid var(--regla);
 }
 

@@ -100,7 +100,7 @@ function Resumen({ recibos, todos, eco, serie }: { recibos: Recibo[]; todos: Rec
       <div className="tarjetas">
         {actual && (
           <Tarjeta
-            color="var(--violeta)"
+            color="var(--agua)"
             icono="plata"
             titulo={`Último neto · ${nombrePeriodo(actual.periodo, true)}`}
             valor={pesosCorto(actual.neto)}
@@ -109,7 +109,7 @@ function Resumen({ recibos, todos, eco, serie }: { recibos: Recibo[]; todos: Rec
         )}
         {comparacion && (
           <Tarjeta
-            color="var(--turquesa)"
+            color="var(--celeste)"
             icono="tendencia"
             titulo="Poder de compra"
             valor={porcentaje(comparacion.variacionReal, true)}

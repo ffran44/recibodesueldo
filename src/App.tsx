@@ -13,11 +13,11 @@ const Analisis = lazy(() => import('./pantallas/Analisis').then((m) => ({ defaul
 const Preguntar = lazy(() => import('./pantallas/Preguntar').then((m) => ({ default: m.Preguntar })))
 
 const PESTAÑAS: { ruta: string; seccion: string; nombre: string; icono: NombreIcono; color: string; clase?: string }[] = [
-  { ruta: '', seccion: 'recibos', nombre: 'Recibos', icono: 'recibos', color: 'var(--violeta)' },
-  { ruta: 'analisis', seccion: 'analisis', nombre: 'Análisis', icono: 'grafico', color: 'var(--turquesa)' },
+  { ruta: '', seccion: 'recibos', nombre: 'Recibos', icono: 'recibos', color: 'var(--agua)' },
+  { ruta: 'analisis', seccion: 'analisis', nombre: 'Análisis', icono: 'grafico', color: 'var(--celeste)' },
   { ruta: 'escanear', seccion: 'escanear', nombre: 'Cargar', icono: 'subir', color: 'var(--rosa)', clase: 'escanear' },
   { ruta: 'preguntar', seccion: 'preguntar', nombre: 'Preguntar', icono: 'preguntar', color: 'var(--ambar)' },
-  { ruta: 'ajustes', seccion: 'ajustes', nombre: 'Ajustes', icono: 'ajustes', color: 'var(--celeste)' },
+  { ruta: 'ajustes', seccion: 'ajustes', nombre: 'Ajustes', icono: 'ajustes', color: 'var(--lavanda)' },
 ]
 
 export default function App() {

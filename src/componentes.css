@@ -3,25 +3,21 @@
   position: relative;
   display: block;
   padding: 22px 22px 20px;
-  color: #fff;
+  color: var(--tinta);
   text-decoration: none;
   overflow: hidden;
-  border: 0;
-  background:
-    radial-gradient(420px 220px at 100% 0%, rgb(244 114 182 / 0.45), transparent 70%),
-    radial-gradient(380px 260px at 0% 100%, rgb(45 212 191 / 0.28), transparent 70%),
-    linear-gradient(135deg, #7c3aed 0%, #5b21b6 55%, #3b1a8a 100%);
-  box-shadow: 0 20px 50px -20px rgb(124 58 237 / 0.75);
-  transition: transform 0.15s;
+  background: color-mix(in srgb, var(--agua) 9%, var(--hoja));
+  border: 1px solid color-mix(in srgb, var(--agua) 28%, transparent);
+  transition: border-color 0.15s;
 }
 
 a.hoja-recibo:hover {
-  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--agua) 55%, transparent);
 }
 
 .hoja-recibo .rotulo,
 .hoja-recibo .nota {
-  color: rgb(255 255 255 / 0.78);
+  color: var(--tinta-2);
 }
 
 .hoja-encabezado {
@@ -70,10 +66,10 @@ a.hoja-recibo:hover {
 }
 
 .hoja-columnas > div {
-  padding: 10px 12px;
+  padding: 10px;
+  min-width: 0;
   border-radius: var(--radio-chico);
-  background: rgb(17 14 36 / 0.35);
-  backdrop-filter: blur(6px);
+  background: var(--color-ficha, var(--hoja-2));
 }
 
 .hoja-columnas dt {
@@ -82,19 +78,21 @@ a.hoja-recibo:hover {
 
 .hoja-columnas dd {
   margin: 4px 0 0;
-  font-size: clamp(0.7rem, 3vw, 0.9rem);
+  font-size: clamp(0.68rem, 1.1vw + 0.3rem, 0.88rem);
   font-weight: 600;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.hoja-recibo .haber {
-  color: #86efac;
+.hoja-columnas > div:nth-child(1) {
+  --color-ficha: color-mix(in srgb, var(--haber) 12%, var(--hoja));
 }
-.hoja-recibo .norem {
-  color: #fde68a;
+.hoja-columnas > div:nth-child(2) {
+  --color-ficha: color-mix(in srgb, var(--norem) 12%, var(--hoja));
 }
-.hoja-recibo .descuento {
-  color: #fda4af;
+.hoja-columnas > div:nth-child(3) {
+  --color-ficha: color-mix(in srgb, var(--descuento) 12%, var(--hoja));
 }
 
 .haber {
@@ -117,21 +115,18 @@ a.hoja-recibo:hover {
 
 .sello {
   display: block;
-  color: #ede9fe;
-  opacity: 0.92;
+  color: var(--sello);
+  opacity: 0.9;
   transform: rotate(-9deg);
-  filter: drop-shadow(0 0 10px rgb(237 233 254 / 0.45));
   animation: estampar 420ms cubic-bezier(0.2, 0.9, 0.3, 1.2) both 150ms;
 }
 
 .sello-alerta {
-  color: #fde68a;
-  filter: drop-shadow(0 0 10px rgb(253 230 138 / 0.5));
+  color: var(--alerta);
 }
 
 .sello-error {
-  color: #fecdd3;
-  filter: drop-shadow(0 0 12px rgb(251 113 133 / 0.8));
+  color: var(--sello-error);
 }
 
 @keyframes estampar {
@@ -1453,9 +1448,7 @@ code {
   position: relative;
   overflow: hidden;
   padding: 16px 18px;
-  background:
-    radial-gradient(240px 140px at 100% 0%, color-mix(in srgb, var(--color, var(--acento)) 22%, transparent), transparent 70%),
-    var(--hoja);
+  background: var(--hoja);
 }
 
 .tarjeta-cabeza {
@@ -1499,7 +1492,7 @@ code {
 }
 
 .pestañas button[aria-selected='true'] {
-  color: #0b1f1c;
+  color: #10201d;
   background: var(--acento);
   font-weight: 700;
 }
@@ -1517,8 +1510,8 @@ code {
 }
 
 .segmentos button[aria-pressed='true'] {
-  background: var(--violeta-fuerte);
-  color: #fff;
+  background: var(--agua);
+  color: var(--sobre-agua);
 }
 
 /* Gráficos */
@@ -1530,7 +1523,7 @@ code {
   background: var(--hoja-2);
   border-color: var(--regla);
   border-radius: var(--radio-chico);
-  box-shadow: 0 12px 30px -10px rgb(0 0 0 / 0.7);
+  box-shadow: none;
 }
 
 .barra-pista {
@@ -1538,7 +1531,7 @@ code {
 }
 
 .barra-relleno {
-  background: linear-gradient(90deg, var(--rosa), var(--descuento));
+  background: var(--descuento);
 }
 
 /* Mapa de conceptos */
@@ -1548,16 +1541,14 @@ code {
 
 /* Tablas */
 .tabla tbody tr:hover td {
-  background: color-mix(in srgb, var(--violeta) 6%, transparent);
+  background: color-mix(in srgb, var(--agua) 6%, transparent);
 }
 
 /* Carga */
 .zona-soltar {
   border: 2px dashed color-mix(in srgb, var(--rosa) 45%, var(--regla));
   border-radius: 20px;
-  background:
-    radial-gradient(500px 220px at 50% 0%, rgb(244 114 182 / 0.12), transparent 70%),
-    var(--hoja);
+  background: var(--hoja);
 }
 
 .zona-soltar.activa {
@@ -1575,7 +1566,7 @@ code {
 }
 
 .progreso span {
-  background: linear-gradient(90deg, var(--violeta-fuerte), var(--rosa));
+  background: var(--agua);
 }
 
 /* Preguntar */
@@ -1591,14 +1582,14 @@ code {
 }
 
 .charla-pregunta {
-  background: linear-gradient(135deg, var(--violeta-fuerte), #6d28d9);
-  color: #fff;
+  background: var(--agua);
+  color: var(--sobre-agua);
   border-radius: 16px 16px 4px 16px;
 }
 
 .linea-tiempo li::before {
-  background: var(--turquesa);
-  box-shadow: 0 0 0 3px var(--hoja), 0 0 12px var(--turquesa);
+  background: var(--agua);
+  box-shadow: 0 0 0 3px var(--hoja);
 }
 
 /* Navegación: fichas de color */
@@ -1639,18 +1630,21 @@ code {
 
   .barra a[aria-current='page'] {
     color: var(--tinta);
-    background: color-mix(in srgb, var(--color, var(--violeta)) 14%, var(--hoja));
+    background: color-mix(in srgb, var(--color, var(--agua)) 12%, var(--hoja));
   }
 
   .barra a.escanear {
-    background: linear-gradient(135deg, #ec4899, #a855f7);
-    color: #fff !important;
-    box-shadow: 0 8px 24px -10px rgb(236 72 153 / 0.8);
+    background: var(--agua);
+    color: var(--sobre-agua) !important;
   }
 
   .barra a.escanear .ficha {
-    background: rgb(255 255 255 / 0.18);
-    color: #fff;
+    background: color-mix(in srgb, var(--sobre-agua) 12%, transparent);
+    color: var(--sobre-agua);
+  }
+
+  .barra a.escanear:hover {
+    background: var(--agua-fuerte);
   }
 
   .barra .marca {
@@ -1665,7 +1659,7 @@ code {
     width: 48px;
     height: 36px;
     border-radius: 18px;
-    color: #fff;
-    background: linear-gradient(135deg, #ec4899, #a855f7);
+    color: var(--sobre-agua);
+    background: var(--agua);
   }
 }

@@ -8,7 +8,7 @@ import { useAuditoria, useRecibos } from '../lib/useDatos'
 import { respaldoSoportado, useRespaldo } from '../lib/respaldoAuto'
 
 /** Cada mes con un color de la paleta, para que el historial se lea de un vistazo */
-const COLORES_MES = ['var(--violeta)', 'var(--turquesa)', 'var(--rosa)', 'var(--ambar)', 'var(--celeste)']
+const COLORES_MES = ['var(--agua)', 'var(--celeste)', 'var(--rosa)', 'var(--ambar)', 'var(--lavanda)']
 
 export function Inicio() {
   const recibos = useRecibos()
