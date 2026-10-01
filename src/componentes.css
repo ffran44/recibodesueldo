@@ -57,10 +57,10 @@ a.hoja-recibo:hover {
   line-height: 1.05;
 }
 
-/* Las tres columnas del recibo como fichas */
+/* Las tres columnas del recibo como fichas; si no entran, pasan a otra fila (nunca se cortan los montos) */
 .hoja-columnas {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
   gap: 8px;
   margin: 0;
 }
@@ -81,8 +81,6 @@ a.hoja-recibo:hover {
   font-size: clamp(0.68rem, 1.1vw + 0.3rem, 0.88rem);
   font-weight: 600;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .hoja-columnas > div:nth-child(1) {
@@ -1859,4 +1857,41 @@ code {
   .informe-fotos {
     break-before: page;
   }
+}
+
+/* ---------- Aviso de cobro ---------- */
+.avisos-cobro {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.aviso-cobro {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--radio);
+  --color: var(--ambar);
+  background: color-mix(in srgb, var(--color) 8%, var(--hoja));
+  border: 1px solid color-mix(in srgb, var(--color) 35%, transparent);
+}
+
+.aviso-cobro.aviso-atrasado {
+  --color: var(--rosa);
+}
+
+.aviso-cobro .ficha {
+  color: var(--color);
+  background: color-mix(in srgb, var(--color) 16%, transparent);
+  box-shadow: none;
+}
+
+.aviso-cobro p {
+  margin: 0;
+  color: var(--tinta-2);
+}
+
+.aviso-cobro .acciones {
+  margin-top: 4px;
 }

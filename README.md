@@ -27,6 +27,7 @@ Todo queda guardado en tu computadora. No hay servidor ni cuenta.
 | **Filtro de período** | Todo, últimos 12 o 6 meses, o un año puntual. |
 | **Mis derechos** | Cuánto te corresponde si te despiden sin causa o si renunciás: indemnización, preaviso, integración del mes, aguinaldo y vacaciones proporcionales, con la ley vigente (LCT con las reformas 27.742 y 27.802) y las bases sacadas de tus recibos. |
 | **Informe para reclamar** | Si un recibo sale *Revisar* u *Observado*, arma un informe imprimible (o PDF) con lo que no cierra, los totales, los conceptos y la foto, para llevar al empleador, al gremio o a un abogado. |
+| **Aviso de cobro** | Si pasó el 4° día hábil del mes y no cargaste el recibo del mes anterior, te avisa en Inicio (y con una notificación de Windows si la activás): puede que no te hayan pagado o que te olvidaste de cargarlo. Botones para "Ya cobré" o "Recordame en 3 días". |
 | **Preguntale a tus recibos** | Preguntas en lenguaje natural: "¿cuánto aumentó mi básico este año?", "¿cuándo cobré más en dólares?". |
 | **Respaldo automático** | Elegís una carpeta (por ejemplo, de Google Drive u OneDrive) y cada cambio se guarda ahí solo: respaldo completo con fotos, un CSV para Excel y una copia por día de las últimas 2 semanas. Si la app queda vacía, no pisa el respaldo bueno. Desde la carpeta se restaura en otra PC o navegador. Funciona en Chrome y Edge. |
 | **Respaldo y Excel a mano** | Descargá un respaldo completo (con fotos) o un CSV que abre directo en Excel. |
@@ -65,6 +66,7 @@ src/
   lib/analysis.ts   sueldo real, dólar, aguinaldo, evolución
   lib/indicadores.ts poder de compra, brecha, aumentos, composición, planilla de conceptos
   lib/derechos.ts   liquidación final estimada (despido y renuncia)
+  lib/avisoCobro.ts aviso de cobro (lo usa también el service worker)
   lib/econ.ts       IPC, dólar y feriados con caché local
   lib/db.ts         base local (IndexedDB)
   lib/carpeta.ts    escritura del respaldo en una carpeta (testeada con una carpeta en memoria)

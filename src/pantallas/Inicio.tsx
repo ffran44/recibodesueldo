@@ -1,5 +1,6 @@
 import { HojaRecibo } from '../componentes/HojaRecibo'
 import { Titulo } from '../componentes/Titulo'
+import { AvisosCobro } from '../componentes/AvisosCobro'
 import { Icono } from '../componentes/Icono'
 import { totalesEfectivos } from '../lib/audit'
 import { anteriorDe } from '../lib/db'
@@ -45,6 +46,8 @@ export function Inicio() {
         <Titulo icono="recibos">Mis recibos</Titulo>
         <span className="rotulo">{recibos.length} guardados</span>
       </header>
+
+      <AvisosCobro />
 
       {respaldoSoportado && !respaldo.carpeta && (
         <p className="aviso aviso-global">

@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { Titulo } from '../componentes/Titulo'
 import { RespaldoAuto } from '../componentes/RespaldoAuto'
+import { AjustesAvisos } from '../componentes/AjustesAvisos'
 import { borrarTodo, exportarCsv, exportarRespaldo, importarRespaldo } from '../lib/backup'
 import {
   guardarApiKey,
@@ -110,6 +111,11 @@ export function Ajustes() {
             </p>
             <button className="boton secundario">Guardar nombre</button>
           </form>
+        </section>
+
+        <section className="hoja tarjeta pila">
+          <span className="rotulo">Aviso de cobro</span>
+          <AjustesAvisos />
         </section>
 
         <section className="hoja tarjeta pila respaldo-auto">
