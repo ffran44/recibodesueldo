@@ -1290,3 +1290,51 @@ kbd {
 .grafico + .nota {
   margin-top: 10px;
 }
+
+/* ---------- Respaldo automático ---------- */
+.aviso-global {
+  margin: 0 0 16px;
+}
+
+.aviso .acciones {
+  margin-top: 10px;
+}
+
+.estado-respaldo {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+}
+
+.punto {
+  flex-shrink: 0;
+  width: 10px;
+  height: 10px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: var(--tinta-3);
+}
+
+.punto.activo {
+  background: var(--haber);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--haber) 25%, transparent);
+}
+
+.punto.pausa {
+  background: var(--alerta);
+}
+
+code {
+  font-family: var(--f-cifra);
+  font-size: 0.85em;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: var(--papel);
+}
+
+@media (min-width: 1000px) {
+  .grilla-ajustes > .respaldo-auto {
+    grid-column: span 1;
+  }
+}

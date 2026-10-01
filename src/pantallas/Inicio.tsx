@@ -4,11 +4,13 @@ import { totalesEfectivos } from '../lib/audit'
 import { anteriorDe } from '../lib/db'
 import { nombrePeriodo, pesos, porcentaje } from '../lib/format'
 import { useAuditoria, useRecibos } from '../lib/useDatos'
+import { respaldoSoportado, useRespaldo } from '../lib/respaldoAuto'
 
 export function Inicio() {
   const recibos = useRecibos()
   const ultimo = recibos?.at(-1)
   const chequeos = useAuditoria(ultimo, recibos)
+  const respaldo = useRespaldo()
 
   if (!recibos) return null
 
@@ -39,6 +41,13 @@ export function Inicio() {
         <h1 className="titulo">Mis recibos</h1>
         <span className="rotulo">{recibos.length} guardados</span>
       </header>
+
+      {respaldoSoportado && !respaldo.carpeta && (
+        <p className="aviso aviso-global">
+          Tus recibos viven solo en este navegador. <a href="#/ajustes">Activá el respaldo automático</a> para tener siempre una copia en una carpeta (por
+          ejemplo, de Google Drive).
+        </p>
+      )}
 
       <div className="dos-columnas inicio">
         <div className="columna-fija">

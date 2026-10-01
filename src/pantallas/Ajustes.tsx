@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { RespaldoAuto } from '../componentes/RespaldoAuto'
 import { borrarTodo, exportarCsv, exportarRespaldo, importarRespaldo } from '../lib/backup'
 import {
   guardarApiKey,
@@ -110,11 +111,15 @@ export function Ajustes() {
           </form>
         </section>
 
+        <section className="hoja tarjeta pila respaldo-auto">
+          <span className="rotulo">Respaldo automático</span>
+          <RespaldoAuto />
+        </section>
+
         <section className="hoja tarjeta pila">
           <span className="rotulo">Tus datos</span>
           <p className="nota">
-            Todo se guarda en este navegador, no en un servidor. Si borrás los datos del navegador o cambiás de computadora, los perdés: descargá un respaldo
-            cada tanto.
+            Todo se guarda en este navegador, no en un servidor. Además del respaldo automático, podés descargar una copia o pasar tus recibos a Excel.
           </p>
           <div className="acciones izquierda">
             <button className="boton" onClick={() => exportarRespaldo()}>

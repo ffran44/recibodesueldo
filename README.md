@@ -26,7 +26,8 @@ Todo queda guardado en tu computadora. No hay servidor ni cuenta.
 | **Análisis: Conceptos** | Planilla de todos los conceptos mes a mes, coloreada según si subieron más o menos que la inflación, y evolución de cualquier concepto contra "si hubiera seguido a la inflación". |
 | **Filtro de período** | Todo, últimos 12 o 6 meses, o un año puntual. |
 | **Preguntale a tus recibos** | Preguntas en lenguaje natural: "¿cuánto aumentó mi básico este año?", "¿cuándo cobré más en dólares?". |
-| **Respaldo y Excel** | Descargá un respaldo completo (con fotos) o un CSV que abre directo en Excel. |
+| **Respaldo automático** | Elegís una carpeta (por ejemplo, de Google Drive u OneDrive) y cada cambio se guarda ahí solo: respaldo completo con fotos, un CSV para Excel y una copia por día de las últimas 2 semanas. Si la app queda vacía, no pisa el respaldo bueno. Desde la carpeta se restaura en otra PC o navegador. Funciona en Chrome y Edge. |
+| **Respaldo y Excel a mano** | Descargá un respaldo completo (con fotos) o un CSV que abre directo en Excel. |
 
 ## Por qué estas decisiones (investigación)
 
@@ -63,6 +64,8 @@ src/
   lib/indicadores.ts poder de compra, brecha, aumentos, composición, planilla de conceptos
   lib/econ.ts       IPC, dólar y feriados con caché local
   lib/db.ts         base local (IndexedDB)
+  lib/carpeta.ts    escritura del respaldo en una carpeta (testeada con una carpeta en memoria)
+  lib/respaldoAuto.ts respaldo automático: permisos, disparo ante cambios, estado
   pantallas/        Inicio, Cargar, Detalle, Análisis, Preguntar, Ajustes
   componentes/      Hoja de recibo, Sello, Editor, Visor, Lista de chequeos
   sw.ts             service worker (uso sin conexión)

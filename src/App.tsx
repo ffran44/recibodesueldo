@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { Icono, type NombreIcono } from './componentes/Icono'
 import { useRuta } from './lib/ruta'
+import { reactivarRespaldo, useRespaldo } from './lib/respaldoAuto'
 import { Inicio } from './pantallas/Inicio'
 import { Detalle } from './pantallas/Detalle'
 import { Ajustes } from './pantallas/Ajustes'
@@ -21,6 +22,7 @@ const PESTAÑAS: { ruta: string; nombre: string; icono: NombreIcono; clase?: str
 
 export default function App() {
   const { partes, consulta } = useRuta()
+  const respaldo = useRespaldo()
   const [seccion = '', id] = partes
 
   let pantalla
@@ -47,6 +49,14 @@ export default function App() {
   return (
     <>
       <main className="app">
+        {respaldo.carpeta && respaldo.permiso && respaldo.permiso !== 'granted' && (
+          <p className="aviso aviso-global">
+            El respaldo automático está en pausa: el navegador pide permiso de nuevo para escribir en la carpeta «{respaldo.carpeta}».{' '}
+            <button className="enlace" onClick={() => reactivarRespaldo().catch(() => {})}>
+              Reactivar
+            </button>
+          </p>
+        )}
         <Suspense fallback={<p className="nota">Cargando…</p>}>{pantalla}</Suspense>
       </main>
       <nav className="barra" aria-label="Secciones">

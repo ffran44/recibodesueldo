@@ -3,8 +3,10 @@ import { createRoot } from 'react-dom/client'
 import { registerSW } from 'virtual:pwa-register'
 import './index.css'
 import App from './App.tsx'
+import { activarRespaldoAutomatico } from './lib/respaldoAuto'
 
 registerSW({ immediate: true })
+activarRespaldoAutomatico()
 
 if (import.meta.env.DEV) {
   // Para probar a mano desde la consola: __db.recibos.toArray()

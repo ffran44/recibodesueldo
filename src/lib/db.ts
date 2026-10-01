@@ -7,10 +7,17 @@ export interface EntradaCache {
   datos: unknown
 }
 
+/** Ajustes que no entran en localStorage (por ejemplo, el acceso a la carpeta de respaldo) */
+export interface Ajuste {
+  clave: string
+  valor: unknown
+}
+
 export const db = new Dexie('recibos') as Dexie & {
   recibos: EntityTable<Recibo, 'id'>
   adjuntos: EntityTable<Adjunto, 'id'>
   cache: EntityTable<EntradaCache, 'clave'>
+  ajustes: EntityTable<Ajuste, 'clave'>
 }
 
 db.version(1).stores({
@@ -18,6 +25,11 @@ db.version(1).stores({
   adjuntos: '++id, reciboId',
   cache: 'clave',
 })
+db.version(2).stores({ ajustes: 'clave' })
+
+export const leerAjuste = async <T>(clave: string) => (await db.ajustes.get(clave))?.valor as T | undefined
+export const guardarAjuste = (clave: string, valor: unknown) => db.ajustes.put({ clave, valor })
+export const borrarAjuste = (clave: string) => db.ajustes.delete(clave)
 
 export async function guardarRecibo(recibo: Recibo, archivos?: File[] | Blob[]) {
   await db.transaction('rw', db.recibos, db.adjuntos, async () => {
