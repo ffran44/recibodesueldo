@@ -25,6 +25,8 @@ Todo queda guardado en tu computadora. No hay servidor ni cuenta.
 | **Análisis: Composición** | Remunerativo vs. no remunerativo (lo no remunerativo no suma para jubilación ni aguinaldo: la app calcula cuánto aguinaldo perdés), peso de los descuentos, a dónde va cada descuento y cuánto de lo que le costás a tu empleador te llega. |
 | **Análisis: Conceptos** | Planilla de todos los conceptos mes a mes, coloreada según si subieron más o menos que la inflación, y evolución de cualquier concepto contra "si hubiera seguido a la inflación". |
 | **Filtro de período** | Todo, últimos 12 o 6 meses, o un año puntual. |
+| **Mis derechos** | Cuánto te corresponde si te despiden sin causa o si renunciás: indemnización, preaviso, integración del mes, aguinaldo y vacaciones proporcionales, con la ley vigente (LCT con las reformas 27.742 y 27.802) y las bases sacadas de tus recibos. |
+| **Informe para reclamar** | Si un recibo sale *Revisar* u *Observado*, arma un informe imprimible (o PDF) con lo que no cierra, los totales, los conceptos y la foto, para llevar al empleador, al gremio o a un abogado. |
 | **Preguntale a tus recibos** | Preguntas en lenguaje natural: "¿cuánto aumentó mi básico este año?", "¿cuándo cobré más en dólares?". |
 | **Respaldo automático** | Elegís una carpeta (por ejemplo, de Google Drive u OneDrive) y cada cambio se guarda ahí solo: respaldo completo con fotos, un CSV para Excel y una copia por día de las últimas 2 semanas. Si la app queda vacía, no pisa el respaldo bueno. Desde la carpeta se restaura en otra PC o navegador. Funciona en Chrome y Edge. |
 | **Respaldo y Excel a mano** | Descargá un respaldo completo (con fotos) o un CSV que abre directo en Excel. |
@@ -62,6 +64,7 @@ src/
   lib/audit.ts      chequeos del recibo (funciones puras, testeadas)
   lib/analysis.ts   sueldo real, dólar, aguinaldo, evolución
   lib/indicadores.ts poder de compra, brecha, aumentos, composición, planilla de conceptos
+  lib/derechos.ts   liquidación final estimada (despido y renuncia)
   lib/econ.ts       IPC, dólar y feriados con caché local
   lib/db.ts         base local (IndexedDB)
   lib/carpeta.ts    escritura del respaldo en una carpeta (testeada con una carpeta en memoria)

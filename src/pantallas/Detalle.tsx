@@ -5,7 +5,7 @@ import { EditorRecibo } from '../componentes/EditorRecibo'
 import { HojaRecibo } from '../componentes/HojaRecibo'
 import { Icono } from '../componentes/Icono'
 import { ListaChequeos } from '../componentes/ListaChequeos'
-import { totalesEfectivos } from '../lib/audit'
+import { estadoGeneral, totalesEfectivos } from '../lib/audit'
 import { antiguedad, cotizacionAl, fechaReferencia, ultimoPeriodo, valorIpc } from '../lib/analysis'
 import { anteriorDe, borrarRecibo, db } from '../lib/db'
 import { fechaLarga, nombrePeriodo, pesos, porcentaje } from '../lib/format'
@@ -100,6 +100,11 @@ export function Detalle({ id, editando }: { id: string; editando: boolean }) {
           <section className="seccion">
             <span className="rotulo">Auditoría</span>
             <ListaChequeos chequeos={chequeos} />
+            {estadoGeneral(chequeos) !== 'ok' && (
+              <a className="boton secundario informe-boton" href={`#/recibo/${id}/informe`}>
+                <Icono nombre="escudo" tamaño={18} /> Armar informe para reclamar
+              </a>
+            )}
           </section>
 
           {(netoHoy || oficial) && (

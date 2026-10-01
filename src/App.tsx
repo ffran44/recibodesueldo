@@ -5,6 +5,8 @@ import { reactivarRespaldo, useRespaldo } from './lib/respaldoAuto'
 import { Inicio } from './pantallas/Inicio'
 import { Detalle } from './pantallas/Detalle'
 import { Ajustes } from './pantallas/Ajustes'
+import { Derechos } from './pantallas/Derechos'
+import { Informe } from './pantallas/Informe'
 import './componentes.css'
 
 // Gráficos y SDK de Claude pesan: se cargan recién al entrar a esas pantallas
@@ -16,6 +18,7 @@ const PESTAÑAS: { ruta: string; seccion: string; nombre: string; icono: NombreI
   { ruta: '', seccion: 'recibos', nombre: 'Recibos', icono: 'recibos', color: 'var(--agua)' },
   { ruta: 'analisis', seccion: 'analisis', nombre: 'Análisis', icono: 'grafico', color: 'var(--celeste)' },
   { ruta: 'escanear', seccion: 'escanear', nombre: 'Cargar', icono: 'subir', color: 'var(--rosa)', clase: 'escanear' },
+  { ruta: 'derechos', seccion: 'derechos', nombre: 'Derechos', icono: 'escudo', color: 'var(--durazno)' },
   { ruta: 'preguntar', seccion: 'preguntar', nombre: 'Preguntar', icono: 'preguntar', color: 'var(--ambar)' },
   { ruta: 'ajustes', seccion: 'ajustes', nombre: 'Ajustes', icono: 'ajustes', color: 'var(--lavanda)' },
 ]
@@ -32,10 +35,13 @@ export default function App() {
       pantalla = <Escanear compartido={consulta.has('compartido')} />
       break
     case 'recibo':
-      pantalla = id ? <Detalle id={id} editando={partes[2] === 'editar'} /> : <Inicio />
+      pantalla = !id ? <Inicio /> : partes[2] === 'informe' ? <Informe id={id} /> : <Detalle id={id} editando={partes[2] === 'editar'} />
       break
     case 'analisis':
       pantalla = <Analisis />
+      break
+    case 'derechos':
+      pantalla = <Derechos />
       break
     case 'preguntar':
       pantalla = <Preguntar />

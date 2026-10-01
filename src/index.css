@@ -16,6 +16,7 @@
   --rosa: #f5b8cb;
   --ambar: #f3d98b;
   --lavanda: #c7b8f5;
+  --durazno: #f6c3a1;
   --acento: var(--agua);
 
   /* Significado */
@@ -120,6 +121,9 @@ a {
 }
 [data-seccion='escanear'] {
   --acento: var(--rosa);
+}
+[data-seccion='derechos'] {
+  --acento: var(--durazno);
 }
 [data-seccion='preguntar'] {
   --acento: var(--ambar);
@@ -268,7 +272,7 @@ a {
   inset: auto 0 0 0;
   z-index: 10;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   height: calc(var(--barra) + env(safe-area-inset-bottom));
   padding-bottom: env(safe-area-inset-bottom);
   background: var(--hoja);

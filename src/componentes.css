@@ -1663,3 +1663,200 @@ code {
     background: var(--agua);
   }
 }
+
+/* ---------- Mis derechos ---------- */
+.escenario {
+  padding: 18px 20px;
+  border-color: color-mix(in srgb, var(--color) 35%, var(--regla));
+  background: color-mix(in srgb, var(--color) 6%, var(--hoja));
+}
+
+.escenario > .rotulo {
+  color: var(--color);
+}
+
+.escenario-total {
+  margin: 6px 0 2px;
+  font-family: var(--f-display);
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.escenario .tabla {
+  margin-top: 12px;
+  background: transparent;
+}
+
+.escenario .tabla td {
+  padding-left: 0;
+  vertical-align: top;
+}
+
+.rubro-detalle {
+  display: block;
+  font-size: 0.8rem;
+}
+
+.antiguedad {
+  margin: 0;
+}
+
+.opcion {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.opcion input {
+  margin-top: 4px;
+  accent-color: var(--agua);
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.valores.sin-borde {
+  padding: 0;
+  border: 0;
+  background: none;
+  box-shadow: none;
+}
+
+.letra-chica ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--tinta-2);
+  font-size: 0.85rem;
+  display: grid;
+  gap: 6px;
+}
+
+.informe-boton {
+  margin-top: 12px;
+}
+
+/* ---------- Informe para reclamar ---------- */
+.informe-acciones {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+/* El informe se ve como una hoja clara, lista para imprimir */
+.informe {
+  max-width: 780px;
+  margin: 16px 0 0;
+  padding: 40px 44px;
+  border-radius: var(--radio);
+  background: #ffffff;
+  color: #1c2526;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.informe h1 {
+  margin: 0 0 4px;
+  font-family: var(--f-display);
+  font-size: 1.5rem;
+}
+
+.informe h2 {
+  margin: 28px 0 8px;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #4a5b5c;
+}
+
+.informe header p {
+  margin: 0;
+  color: #4a5b5c;
+}
+
+.informe dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 16px;
+  margin: 0;
+}
+
+.informe dt {
+  color: #4a5b5c;
+}
+
+.informe dd {
+  margin: 0;
+}
+
+.informe table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.informe th,
+.informe td {
+  text-align: left;
+  padding: 6px 4px;
+  border-bottom: 1px solid #dfe5e5;
+}
+
+.informe td:last-child,
+.informe th:last-child {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.informe ol {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 6px;
+}
+
+.informe-fotos img {
+  display: block;
+  max-width: 100%;
+  margin-top: 8px;
+  border: 1px solid #dfe5e5;
+}
+
+.informe footer {
+  margin-top: 32px;
+  padding-top: 12px;
+  border-top: 1px solid #dfe5e5;
+  font-size: 0.8rem;
+  color: #4a5b5c;
+}
+
+@media print {
+  html,
+  body {
+    background: #fff !important;
+  }
+
+  .barra,
+  .no-imprimir,
+  .aviso-global {
+    display: none !important;
+  }
+
+  .app {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+  }
+
+  .informe {
+    margin: 0;
+    padding: 0;
+    max-width: none;
+  }
+
+  .informe-fotos {
+    break-before: page;
+  }
+}
