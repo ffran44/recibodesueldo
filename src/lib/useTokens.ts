@@ -1,6 +1,21 @@
 import { useEffect, useState } from 'react'
 
-const NOMBRES = ['--serie-real', '--serie-nominal', '--tinta', '--tinta-2', '--tinta-3', '--regla', '--hoja'] as const
+const NOMBRES = [
+  '--serie-real',
+  '--serie-nominal',
+  '--serie-blue',
+  '--serie-ref',
+  '--g-rem',
+  '--g-norem',
+  '--g-desc',
+  '--div-pos',
+  '--div-neg',
+  '--tinta',
+  '--tinta-2',
+  '--tinta-3',
+  '--regla',
+  '--hoja',
+] as const
 type Tokens = Record<(typeof NOMBRES)[number], string>
 
 const leer = (): Tokens => {

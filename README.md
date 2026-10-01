@@ -20,10 +20,11 @@ Todo queda guardado en tu computadora. No hay servidor ni cuenta.
 | **Revisión con auditoría en vivo** | Ves lo leído al lado de la foto (con zoom). Mientras corregís, la app verifica que los conceptos sumen el total impreso, así un número mal leído salta enseguida. |
 | **Sello de auditoría** | Cada recibo lleva un sello: *Conforme*, *Revisar* u *Observado*. Chequea: sumas por columna; neto = remunerativo + no remunerativo − descuentos; neto en letras = neto en números; aporte jubilatorio del 11%; **pago en término** (4° día hábil, art. 128 LCT, con feriados nacionales); **aportes depositados al día** (SUSS). |
 | **Comparación con el mes anterior** | Avisa si dejaste de cobrar un concepto, si apareció uno nuevo, si un descuento cambió de alícuota (ej.: la obra social pasó de 6,5% a 7%) o si cobraste menos. |
-| **Sueldo real** | Neto ajustado por IPC de INDEC: "¿le ganaste a la inflación?" en los últimos 12 meses y desde el primer recibo. |
-| **Sueldo en dólares** | Neto al dólar oficial y blue del día de cobro. |
-| **Aguinaldo estimado** | 50% de la mejor remuneración del semestre, proporcional si entraste a mitad de semestre, con el neto estimado. |
-| **Evolución por concepto** | Gráfico de cualquier concepto (básico, antigüedad, etc.) a lo largo del tiempo. |
+| **Análisis: Resumen** | Último neto, poder de compra, plata ganada o perdida contra la inflación, inflación desde tu último aumento, cuánto deberías cobrar hoy para igualar tu mejor mes, aguinaldo estimado y total cobrado por año. |
+| **Análisis: Inflación y dólar** | Poder de compra con base 100 (contra precios, dólar oficial y blue en la misma escala), tu variación vs. la inflación de cada mes, ganancia o pérdida mensual, **aumentos detectados** con la inflación entre uno y otro, y neto en dólares. |
+| **Análisis: Composición** | Remunerativo vs. no remunerativo (lo no remunerativo no suma para jubilación ni aguinaldo: la app calcula cuánto aguinaldo perdés), peso de los descuentos, a dónde va cada descuento y cuánto de lo que le costás a tu empleador te llega. |
+| **Análisis: Conceptos** | Planilla de todos los conceptos mes a mes, coloreada según si subieron más o menos que la inflación, y evolución de cualquier concepto contra "si hubiera seguido a la inflación". |
+| **Filtro de período** | Todo, últimos 12 o 6 meses, o un año puntual. |
 | **Preguntale a tus recibos** | Preguntas en lenguaje natural: "¿cuánto aumentó mi básico este año?", "¿cuándo cobré más en dólares?". |
 | **Respaldo y Excel** | Descargá un respaldo completo (con fotos) o un CSV que abre directo en Excel. |
 
@@ -46,7 +47,7 @@ Todo queda guardado en tu computadora. No hay servidor ni cuenta.
 ```bash
 npm install
 npm run dev        # http://localhost:5173/recibodesueldo/
-npm test           # auditoría, ocultado de datos, inflación, aguinaldo, montos
+npm test           # auditoría, ocultado de datos, indicadores, aguinaldo, montos
 npm run build
 ```
 
@@ -59,6 +60,7 @@ src/
   lib/ia.ts         elige Gemini o Claude; esquema e instrucciones en lib/esquema.ts
   lib/audit.ts      chequeos del recibo (funciones puras, testeadas)
   lib/analysis.ts   sueldo real, dólar, aguinaldo, evolución
+  lib/indicadores.ts poder de compra, brecha, aumentos, composición, planilla de conceptos
   lib/econ.ts       IPC, dólar y feriados con caché local
   lib/db.ts         base local (IndexedDB)
   pantallas/        Inicio, Cargar, Detalle, Análisis, Preguntar, Ajustes

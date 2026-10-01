@@ -1118,3 +1118,175 @@ kbd {
     bottom: 12px;
   }
 }
+
+/* ---------- Análisis: pestañas, tarjetas, mapa ---------- */
+.rango {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pestañas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--regla);
+}
+
+.pestañas button {
+  border: 0;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  background: none;
+  padding: 10px 14px;
+  min-height: 44px;
+  color: var(--tinta-2);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.pestañas button[aria-selected='true'] {
+  color: var(--tinta);
+  border-bottom-color: var(--tinta);
+  font-weight: 600;
+}
+
+.tarjetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.tarjeta-dato {
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  padding: 14px 16px;
+}
+
+.tarjeta-valor {
+  font-size: 1.55rem;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.tarjeta-dato .nota {
+  font-size: 0.82rem;
+}
+
+.sin-datos {
+  margin: 0;
+  padding: 16px;
+}
+
+.mapa {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.8rem;
+  min-width: 100%;
+}
+
+.mapa th,
+.mapa td {
+  padding: 7px 10px;
+  border-bottom: 1px solid var(--regla);
+  white-space: nowrap;
+}
+
+.mapa thead th {
+  font-family: var(--f-display);
+  font-stretch: 112%;
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--tinta-2);
+  text-align: right;
+}
+
+.mapa td {
+  text-align: right;
+}
+
+.mapa th[scope='row'],
+.mapa thead th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  text-align: left;
+  font-weight: 500;
+  background: var(--hoja);
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mapa-grupo th {
+  text-align: left;
+  font-family: var(--f-display);
+  font-stretch: 112%;
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--tinta-2);
+  background: var(--papel);
+  position: static;
+}
+
+.escala {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin: 0 0 8px;
+}
+
+.escala-muestra {
+  display: inline-block;
+  width: 18px;
+  height: 12px;
+  border-radius: 3px;
+  border: 1px solid var(--regla);
+  vertical-align: middle;
+}
+
+.linea-tiempo {
+  list-style: none;
+  margin: 0;
+  padding: 4px 16px;
+}
+
+.linea-tiempo li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 12px;
+  padding: 10px 0 10px 16px;
+  border-left: 2px solid var(--regla);
+  position: relative;
+}
+
+.linea-tiempo li::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 15px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--serie-nominal);
+  box-shadow: 0 0 0 2px var(--hoja);
+}
+
+.linea-tiempo .nota {
+  grid-column: 1 / -1;
+}
+
+.linea-tiempo .libro-periodo {
+  text-transform: capitalize;
+}
+
+.grafico + .tabla,
+.grafico + .nota {
+  margin-top: 10px;
+}

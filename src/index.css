@@ -13,6 +13,16 @@
   --alerta: #9a6700;
   --serie-real: #5b3fa0;
   --serie-nominal: #1f8a70;
+  --serie-blue: #b8651b;
+  --serie-ref: #8a94a3;
+  /* Composición del sueldo (validadas para daltonismo) */
+  --g-rem: #1f8a70;
+  --g-norem: #a2781a;
+  --g-desc: #b23a48;
+  /* Divergente: arriba / abajo de la inflación, gris en el medio */
+  --div-pos: #1f8a70;
+  --div-neg: #b23a48;
+  --div-neutro: #eceff3;
   --foco: #2f6fdb;
 
   --f-display: 'Archivo', 'Arial Narrow', sans-serif;
@@ -40,6 +50,14 @@
     --alerta: #e0b44c;
     --serie-real: #8f72d6;
     --serie-nominal: #2fa383;
+    --serie-blue: #c4752f;
+    --serie-ref: #6b7685;
+    --g-rem: #2fa383;
+    --g-norem: #b08a2c;
+    --g-desc: #d4606f;
+    --div-pos: #2fa383;
+    --div-neg: #d4606f;
+    --div-neutro: #222b36;
     --foco: #7aa7ff;
     color-scheme: dark;
   }
