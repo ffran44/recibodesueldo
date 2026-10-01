@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Titulo } from '../componentes/Titulo'
 import { preguntar, SinApiKey } from '../lib/ia'
 import { cotizacionAl } from '../lib/analysis'
 import { useRecibos } from '../lib/useDatos'
@@ -63,7 +64,7 @@ export function Preguntar() {
   return (
     <>
       <header className="encabezado">
-        <h1 className="titulo">Preguntale a tus recibos</h1>
+        <Titulo icono="preguntar">Preguntale a tus recibos</Titulo>
       </header>
 
       {!recibos.length ? (

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { Titulo } from '../componentes/Titulo'
 import { Barras, Lineas, SinDatos, Tarjeta } from '../componentes/graficos'
 import { MapaConceptos } from '../componentes/MapaConceptos'
 import { contraInflacion, estimarAguinaldo, serieConcepto, serieSalarial, ultimoPeriodo, valorIpc, type PuntoSerie } from '../lib/analysis'
@@ -99,6 +100,8 @@ function Resumen({ recibos, todos, eco, serie }: { recibos: Recibo[]; todos: Rec
       <div className="tarjetas">
         {actual && (
           <Tarjeta
+            color="var(--violeta)"
+            icono="plata"
             titulo={`Último neto · ${nombrePeriodo(actual.periodo, true)}`}
             valor={pesosCorto(actual.neto)}
             detalle={anterior ? `${porcentaje(actual.neto / anterior.neto - 1, true)} vs ${nombrePeriodo(anterior.periodo, true)}` : undefined}
@@ -106,6 +109,8 @@ function Resumen({ recibos, todos, eco, serie }: { recibos: Recibo[]; todos: Rec
         )}
         {comparacion && (
           <Tarjeta
+            color="var(--turquesa)"
+            icono="tendencia"
             titulo="Poder de compra"
             valor={porcentaje(comparacion.variacionReal, true)}
             tono={comparacion.variacionReal >= 0 ? 'bien' : 'mal'}
@@ -114,6 +119,8 @@ function Resumen({ recibos, todos, eco, serie }: { recibos: Recibo[]; todos: Rec
         )}
         {acumulado != null && brecha.length > 1 && (
           <Tarjeta
+            color={acumulado < 0 ? 'var(--descuento)' : 'var(--haber)'}
+            icono={acumulado < 0 ? 'baja' : 'tendencia'}
             titulo={acumulado < 0 ? 'Lo que te comió la inflación' : 'Lo que le ganaste a la inflación'}
             valor={pesosCorto(Math.abs(acumulado))}
             tono={acumulado < 0 ? 'mal' : 'bien'}
@@ -122,6 +129,8 @@ function Resumen({ recibos, todos, eco, serie }: { recibos: Recibo[]; todos: Rec
         )}
         {ultimoAumento && ultimoAumento.periodo >= ultimoAumento.hasta && (
           <Tarjeta
+            color="var(--rosa)"
+            icono="calendario"
             titulo="Último aumento"
             valor={porcentaje(ultimoAumento.variacion, true)}
             tono="bien"
@@ -130,6 +139,8 @@ function Resumen({ recibos, todos, eco, serie }: { recibos: Recibo[]; todos: Rec
         )}
         {ultimoAumento && ultimoAumento.periodo < ultimoAumento.hasta && (
           <Tarjeta
+            color="var(--rosa)"
+            icono="calendario"
             titulo="Desde tu último aumento"
             valor={porcentaje(ultimoAumento.inflacion, true)}
             tono={ultimoAumento.inflacion > 0.02 ? 'mal' : undefined}
@@ -138,6 +149,8 @@ function Resumen({ recibos, todos, eco, serie }: { recibos: Recibo[]; todos: Rec
         )}
         {mantener && mantener.faltante > 0 && (
           <Tarjeta
+            color="var(--celeste)"
+            icono="objetivo"
             titulo="Para igualar tu mejor mes"
             valor={pesosCorto(mantener.monto)}
             detalle={`Es lo que valdría hoy tu neto de ${nombrePeriodo(mantener.mejorPeriodo, true)}: te faltan ${pesosCorto(mantener.faltante)} por mes.`}
@@ -145,6 +158,8 @@ function Resumen({ recibos, todos, eco, serie }: { recibos: Recibo[]; todos: Rec
         )}
         {sac && (
           <Tarjeta
+            color="var(--ambar)"
+            icono="regalo"
             titulo={`Aguinaldo estimado · ${sac.semestre}`}
             valor={pesosCorto(sac.netoEstimado)}
             detalle={`Bruto ${pesosCorto(sac.bruto)}: la mitad de tu mejor remunerativo (${nombrePeriodo(sac.mejorPeriodo, true)})${sac.meses < 6 ? `, proporcional a ${sac.meses} meses` : ''}.`}
@@ -347,13 +362,15 @@ function Composicion({ recibos }: { recibos: Recibo[] }) {
     <>
       <div className="tarjetas">
         <Tarjeta
+          color="var(--ambar)"
+          icono="escudo"
           titulo="No remunerativo"
           valor={porcentaje(ultimo.pctNoRemunerativo)}
           detalle={`de tu bruto en ${nombrePeriodo(ultimo.periodo, true)} (${pesosCorto(ultimo.noRemunerativo)}). No suma para jubilación ni aguinaldo${aguinaldoPerdido > 0 ? `: si fuera remunerativo, tu aguinaldo sería unos ${pesosCorto(aguinaldoPerdido)} más` : ''}.`}
         />
-        <Tarjeta titulo="Descuentos" valor={porcentaje(ultimo.pctDescuentos)} detalle={`de tu remunerativo (${pesosCorto(ultimo.retenciones)}).`} />
+        <Tarjeta color="var(--rosa)" icono="baja" titulo="Descuentos" valor={porcentaje(ultimo.pctDescuentos)} detalle={`de tu remunerativo (${pesosCorto(ultimo.retenciones)}).`} />
         {costo && (
-          <Tarjeta titulo="De lo que le costás a tu empleador" valor={porcentaje(ultimo.neto / costo)} detalle={`te llega en mano. Costo total: ${pesosCorto(costo)}.`} />
+          <Tarjeta color="var(--celeste)" icono="plata" titulo="De lo que le costás a tu empleador" valor={porcentaje(ultimo.neto / costo)} detalle={`te llega en mano. Costo total: ${pesosCorto(costo)}.`} />
         )}
       </div>
 
@@ -497,7 +514,7 @@ export function Analisis() {
   return (
     <>
       <header className="encabezado">
-        <h1 className="titulo">Análisis</h1>
+        <Titulo icono="grafico">Análisis</Titulo>
         <label className="rango">
           <span className="rotulo">Período</span>
           <select

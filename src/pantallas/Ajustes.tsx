@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { Titulo } from '../componentes/Titulo'
 import { RespaldoAuto } from '../componentes/RespaldoAuto'
 import { borrarTodo, exportarCsv, exportarRespaldo, importarRespaldo } from '../lib/backup'
 import {
@@ -35,7 +36,7 @@ export function Ajustes() {
   return (
     <>
       <header className="encabezado">
-        <h1 className="titulo">Ajustes</h1>
+        <Titulo icono="ajustes">Ajustes</Titulo>
       </header>
 
       <div className="grilla-ajustes">

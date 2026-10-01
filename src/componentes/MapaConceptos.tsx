@@ -10,7 +10,7 @@ const TIPOS = { remunerativo: 'Remunerativos', no_remunerativo: 'No remunerativo
 /** Intensidad del color: 20 puntos de diferencia contra la inflación ya es el máximo */
 function fondo(diferencia: number | null) {
   if (diferencia == null || Math.abs(diferencia) < 0.002) return undefined
-  const intensidad = Math.min(60, Math.round(Math.abs(diferencia) * 300))
+  const intensidad = Math.min(75, Math.round(Math.abs(diferencia) * 500))
   return `color-mix(in oklab, var(${diferencia > 0 ? '--div-pos' : '--div-neg'}) ${intensidad}%, var(--div-neutro))`
 }
 
@@ -37,9 +37,9 @@ export function MapaConceptos({ recibos, ipc }: { recibos: DatosRecibo[]; ipc?: 
       </div>
       {vista === 'variacion' && ipc && (
         <p className="nota escala">
-          <span className="escala-muestra" style={{ background: 'color-mix(in oklab, var(--div-neg) 60%, var(--div-neutro))' }} /> Subió menos que la inflación
+          <span className="escala-muestra" style={{ background: 'color-mix(in oklab, var(--div-neg) 75%, var(--div-neutro))' }} /> Subió menos que la inflación
           <span className="escala-muestra" style={{ background: 'var(--div-neutro)' }} /> Igual
-          <span className="escala-muestra" style={{ background: 'color-mix(in oklab, var(--div-pos) 60%, var(--div-neutro))' }} /> Le ganó (en descuentos, al revés)
+          <span className="escala-muestra" style={{ background: 'color-mix(in oklab, var(--div-pos) 75%, var(--div-neutro))' }} /> Le ganó (en descuentos, al revés)
         </p>
       )}
       <div className="desplazable hoja">

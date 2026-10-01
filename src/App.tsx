@@ -12,18 +12,19 @@ const Escanear = lazy(() => import('./pantallas/Escanear').then((m) => ({ defaul
 const Analisis = lazy(() => import('./pantallas/Analisis').then((m) => ({ default: m.Analisis })))
 const Preguntar = lazy(() => import('./pantallas/Preguntar').then((m) => ({ default: m.Preguntar })))
 
-const PESTAÑAS: { ruta: string; nombre: string; icono: NombreIcono; clase?: string }[] = [
-  { ruta: '', nombre: 'Recibos', icono: 'recibos' },
-  { ruta: 'analisis', nombre: 'Análisis', icono: 'grafico' },
-  { ruta: 'escanear', nombre: 'Cargar', icono: 'subir', clase: 'escanear' },
-  { ruta: 'preguntar', nombre: 'Preguntar', icono: 'preguntar' },
-  { ruta: 'ajustes', nombre: 'Ajustes', icono: 'ajustes' },
+const PESTAÑAS: { ruta: string; seccion: string; nombre: string; icono: NombreIcono; color: string; clase?: string }[] = [
+  { ruta: '', seccion: 'recibos', nombre: 'Recibos', icono: 'recibos', color: 'var(--violeta)' },
+  { ruta: 'analisis', seccion: 'analisis', nombre: 'Análisis', icono: 'grafico', color: 'var(--turquesa)' },
+  { ruta: 'escanear', seccion: 'escanear', nombre: 'Cargar', icono: 'subir', color: 'var(--rosa)', clase: 'escanear' },
+  { ruta: 'preguntar', seccion: 'preguntar', nombre: 'Preguntar', icono: 'preguntar', color: 'var(--ambar)' },
+  { ruta: 'ajustes', seccion: 'ajustes', nombre: 'Ajustes', icono: 'ajustes', color: 'var(--celeste)' },
 ]
 
 export default function App() {
   const { partes, consulta } = useRuta()
   const respaldo = useRespaldo()
   const [seccion = '', id] = partes
+  const colorSeccion = PESTAÑAS.find((p) => p.ruta === seccion)?.seccion ?? 'recibos'
 
   let pantalla
   switch (seccion) {
@@ -48,7 +49,7 @@ export default function App() {
 
   return (
     <>
-      <main className="app">
+      <main className="app" data-seccion={colorSeccion}>
         {respaldo.carpeta && respaldo.permiso && respaldo.permiso !== 'granted' && (
           <p className="aviso aviso-global">
             El respaldo automático está en pausa: el navegador pide permiso de nuevo para escribir en la carpeta «{respaldo.carpeta}».{' '}
@@ -71,7 +72,7 @@ export default function App() {
             className={p.clase}
             aria-current={seccion === p.ruta || (p.ruta === '' && seccion === 'recibo') ? 'page' : undefined}
           >
-            <span>
+            <span className="ficha" style={{ '--color': p.color } as React.CSSProperties}>
               <Icono nombre={p.icono} />
             </span>
             <span>{p.nombre}</span>

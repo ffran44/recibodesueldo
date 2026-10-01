@@ -13,6 +13,14 @@ const trazos = {
   basura: 'M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13',
   lapiz: 'M4 20l4-1 11-11-3-3L5 16l-1 4z',
   subir: 'M12 16V4M7 9l5-5 5 5M5 20h14',
+  plata: 'M3 7h18v10H3V7zM12 15a3 3 0 100-6 3 3 0 000 6zM6 10v4M18 10v4',
+  tendencia: 'M3 17l6-6 4 4 8-8M15 7h6v6',
+  baja: 'M3 7l6 6 4-4 8 8M15 17h6v-6',
+  regalo: 'M4 11h16v9H4v-9zM3 7h18v4H3V7zM12 7v13M12 7c-1.5-3-5-3-5-1s3 1 5 1zM12 7c1.5-3 5-3 5-1s-3 1-5 1z',
+  calendario: 'M4 6h16v14H4V6zM4 10h16M8 3v5M16 3v5',
+  objetivo: 'M12 21a9 9 0 100-18 9 9 0 000 18zM12 16a4 4 0 100-8 4 4 0 000 8zM12 12h.01',
+  dolar: 'M12 3v18M16 7.5c0-1.9-1.8-3-4-3s-4 1.1-4 3 1.8 2.6 4 3 4 1.1 4 3-1.8 3-4 3-4-1.1-4-3',
+  escudo: 'M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6l8-3z',
 } as const
 
 export type NombreIcono = keyof typeof trazos

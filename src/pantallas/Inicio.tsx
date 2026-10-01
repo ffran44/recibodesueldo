@@ -1,10 +1,14 @@
 import { HojaRecibo } from '../componentes/HojaRecibo'
+import { Titulo } from '../componentes/Titulo'
 import { Icono } from '../componentes/Icono'
 import { totalesEfectivos } from '../lib/audit'
 import { anteriorDe } from '../lib/db'
 import { nombrePeriodo, pesos, porcentaje } from '../lib/format'
 import { useAuditoria, useRecibos } from '../lib/useDatos'
 import { respaldoSoportado, useRespaldo } from '../lib/respaldoAuto'
+
+/** Cada mes con un color de la paleta, para que el historial se lea de un vistazo */
+const COLORES_MES = ['var(--violeta)', 'var(--turquesa)', 'var(--rosa)', 'var(--ambar)', 'var(--celeste)']
 
 export function Inicio() {
   const recibos = useRecibos()
@@ -38,7 +42,7 @@ export function Inicio() {
   return (
     <>
       <header className="encabezado">
-        <h1 className="titulo">Mis recibos</h1>
+        <Titulo icono="recibos">Mis recibos</Titulo>
         <span className="rotulo">{recibos.length} guardados</span>
       </header>
 
@@ -71,15 +75,20 @@ export function Inicio() {
                     <li key={r.id}>
                       <a href={`#/recibo/${r.id}`}>
                         <span>
-                          <span className="libro-periodo">{nombrePeriodo(r.periodo)}</span>
-                          <span className="nota">
-                            {r.tipoLiquidacion !== 'mensual' ? `${r.tipoLiquidacion.toUpperCase()} · ` : ''}
-                            {r.empleador.nombre}
+                          <span className="mes-burbuja" style={{ '--color': COLORES_MES[Number(r.periodo.slice(5)) % COLORES_MES.length] } as React.CSSProperties}>
+                            {nombrePeriodo(r.periodo, true).slice(0, 3)}
+                          </span>
+                          <span className="libro-texto">
+                            <span className="libro-periodo">{nombrePeriodo(r.periodo)}</span>
+                            <span className="nota">
+                              {r.tipoLiquidacion !== 'mensual' ? `${r.tipoLiquidacion.toUpperCase()} · ` : ''}
+                              {r.empleador.nombre}
+                            </span>
                           </span>
                         </span>
                         <span className="libro-cifras">
                           <span className="cifra">{pesos(neto)}</span>
-                          {variacion != null && <span className={`cifra nota ${variacion < 0 ? 'descuento' : ''}`}>{porcentaje(variacion, true)}</span>}
+                          {variacion != null && <span className={`variacion cifra ${variacion < 0 ? 'baja' : ''}`}>{porcentaje(variacion, true)}</span>}
                         </span>
                       </a>
                     </li>

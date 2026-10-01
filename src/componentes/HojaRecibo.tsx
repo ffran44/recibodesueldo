@@ -1,6 +1,6 @@
 import type { Recibo } from '../lib/types'
 import { estadoGeneral, totalesEfectivos, type Chequeo } from '../lib/audit'
-import { nombrePeriodo, numero, pesos } from '../lib/format'
+import { nombrePeriodo, pesos, pesosCorto } from '../lib/format'
 import { Sello } from './Sello'
 
 const TIPO: Record<Recibo['tipoLiquidacion'], string> = {
@@ -11,7 +11,7 @@ const TIPO: Record<Recibo['tipoLiquidacion'], string> = {
   otro: 'Liquidación',
 }
 
-/** El recibo como hoja: perforaciones, encabezado de formulario, columnas y sello */
+/** El recibo como tarjeta principal: período, neto, las tres columnas y el sello de auditoría */
 export function HojaRecibo({ recibo, chequeos, enlace }: { recibo: Recibo; chequeos: Chequeo[]; enlace?: string }) {
   const t = totalesEfectivos(recibo)
   const contenido = (
@@ -28,15 +28,15 @@ export function HojaRecibo({ recibo, chequeos, enlace }: { recibo: Recibo; chequ
       <dl className="hoja-columnas">
         <div>
           <dt className="rotulo">Remunerativo</dt>
-          <dd className="cifra haber">{numero(t.remunerativo)}</dd>
+          <dd className="cifra haber">{pesosCorto(t.remunerativo)}</dd>
         </div>
         <div>
           <dt className="rotulo">No remun.</dt>
-          <dd className="cifra norem">{numero(t.noRemunerativo)}</dd>
+          <dd className="cifra norem">{pesosCorto(t.noRemunerativo)}</dd>
         </div>
         <div>
           <dt className="rotulo">Descuentos</dt>
-          <dd className="cifra descuento">−{numero(t.retenciones)}</dd>
+          <dd className="cifra descuento">−{pesosCorto(t.retenciones)}</dd>
         </div>
       </dl>
       <div className="hoja-sello">

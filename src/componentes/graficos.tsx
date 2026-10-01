@@ -15,6 +15,7 @@ import {
 } from 'recharts'
 import { nombrePeriodo } from '../lib/format'
 import { useTokens } from '../lib/useTokens'
+import { Icono, type NombreIcono } from './Icono'
 
 export interface Serie {
   clave: string
@@ -169,10 +170,32 @@ export function Barras({
   )
 }
 
-export function Tarjeta({ titulo, valor, detalle, tono }: { titulo: string; valor: ReactNode; detalle?: ReactNode; tono?: 'bien' | 'mal' }) {
+export function Tarjeta({
+  titulo,
+  valor,
+  detalle,
+  tono,
+  color,
+  icono,
+}: {
+  titulo: string
+  valor: ReactNode
+  detalle?: ReactNode
+  tono?: 'bien' | 'mal'
+  /** Variable CSS del color de la tarjeta, por ejemplo 'var(--turquesa)' */
+  color?: string
+  icono?: NombreIcono
+}) {
   return (
-    <div className="tarjeta-dato hoja">
-      <span className="rotulo">{titulo}</span>
+    <div className="tarjeta-dato hoja" style={color ? ({ '--color': color } as React.CSSProperties) : undefined}>
+      <span className="tarjeta-cabeza">
+        {icono && (
+          <span className="ficha" aria-hidden>
+            <Icono nombre={icono} tamaño={18} />
+          </span>
+        )}
+        <span className="rotulo">{titulo}</span>
+      </span>
       <span className={`tarjeta-valor cifra ${tono === 'bien' ? 'haber' : tono === 'mal' ? 'descuento' : ''}`}>{valor}</span>
       {detalle && <span className="nota">{detalle}</span>}
     </div>

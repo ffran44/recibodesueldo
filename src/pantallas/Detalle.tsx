@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Titulo } from '../componentes/Titulo'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { EditorRecibo } from '../componentes/EditorRecibo'
 import { HojaRecibo } from '../componentes/HojaRecibo'
@@ -57,7 +58,7 @@ export function Detalle({ id, editando }: { id: string; editando: boolean }) {
     return (
       <>
         <header className="encabezado">
-          <h1 className="titulo">Editar {nombrePeriodo(recibo.periodo)}</h1>
+          <Titulo icono="lapiz">Editar {nombrePeriodo(recibo.periodo)}</Titulo>
         </header>
         <EditorRecibo
           inicial={recibo}

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Titulo } from '../componentes/Titulo'
 import { EditorRecibo } from '../componentes/EditorRecibo'
 import { Icono } from '../componentes/Icono'
 import { VisorArchivo } from '../componentes/VisorArchivo'
@@ -165,7 +166,7 @@ export function Escanear({ compartido }: { compartido: boolean }) {
     return (
       <>
         <header className="encabezado">
-          <h1 className="titulo">Revisá lo que se envía</h1>
+          <Titulo icono="subir">Revisá lo que se envía</Titulo>
           {progresoCola}
         </header>
         <div className="dos-columnas">
@@ -217,7 +218,7 @@ export function Escanear({ compartido }: { compartido: boolean }) {
     return (
       <>
         <header className="encabezado">
-          <h1 className="titulo">Revisá y guardá</h1>
+          <Titulo icono="ok">Revisá y guardá</Titulo>
           {progresoCola}
         </header>
         <div className="dos-columnas">
@@ -258,7 +259,7 @@ export function Escanear({ compartido }: { compartido: boolean }) {
   return (
     <>
       <header className="encabezado">
-        <h1 className="titulo">Cargar recibos</h1>
+        <Titulo icono="subir">Cargar recibos</Titulo>
       </header>
 
       <input ref={selector} type="file" accept="image/*,application/pdf" multiple hidden onChange={(e) => agregar(e.target.files)} />
