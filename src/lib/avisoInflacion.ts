@@ -14,7 +14,9 @@ export interface AvisoInflacion {
   periodo: string
   mensual: number
   interanual: number | null
-  /** Cuánto subió tu neto ese mes y la diferencia (en puntos) contra la inflación */
+  /** El sueldo al que le pega esta inflación: a mes vencido, el del mes anterior */
+  sueldo: string
+  /** Cuánto subió ese sueldo y la diferencia (en puntos) contra la inflación */
   tuMes: { variacion: number; diferencia: number } | null
   desdeAumento: { periodo: string; inflacion: number; perdida: number } | null
 }
@@ -30,8 +32,9 @@ export function avisoInflacion(ipc: SerieMensual, recibos: DatosRecibo[], vista:
 
   const serie = serieSalarial(soloMensuales(recibos), {})
   const neto = (p: string) => serie.find((s) => s.periodo === p)?.neto
-  const n1 = neto(periodo)
-  const n0 = neto(sumarMeses(periodo, -1))
+  const sueldo = sumarMeses(periodo, -1)
+  const n1 = neto(sueldo)
+  const n0 = neto(sumarMeses(sueldo, -1))
   const variacion = n1 && n0 ? n1 / n0 - 1 : null
 
   const aumento = desdeUltimoAumento(recibos, ipc)
@@ -39,8 +42,9 @@ export function avisoInflacion(ipc: SerieMensual, recibos: DatosRecibo[], vista:
     periodo,
     mensual,
     interanual: haceUnAnio ? actual / haceUnAnio - 1 : null,
+    sueldo,
     tuMes: variacion == null ? null : { variacion, diferencia: variacion - mensual },
-    desdeAumento: aumento && aumento.periodo < periodo ? { periodo: aumento.periodo, inflacion: aumento.inflacion, perdida: aumento.perdidaPoderCompra } : null,
+    desdeAumento: aumento && !aumento.pendiente ? { periodo: aumento.periodo, inflacion: aumento.inflacion, perdida: aumento.perdidaPoderCompra } : null,
   }
 }
 
@@ -55,9 +59,10 @@ export function textoAvisoInflacion(a: AvisoInflacion) {
     const { variacion, diferencia } = a.tuMes
     // Poder de compra real: lo que subió el sueldo descontando lo que subieron los precios
     const real = (1 + variacion) / (1 + a.mensual) - 1
-    if (variacion <= 0.0005) partes.push(`Ese mes tu sueldo no subió: perdiste ${pct(-real)} de poder de compra.`)
-    else if (diferencia >= 0) partes.push(`Ese mes tu sueldo subió ${pct(variacion)}: le ganaste a la inflación.`)
-    else partes.push(`Ese mes tu sueldo subió ${pct(variacion)}, menos que los precios: perdiste ${pct(-real)} de poder de compra.`)
+    const cual = `Tu sueldo de ${mes(a.sueldo)}, que se gasta en ${mes(a.periodo)},`
+    if (variacion <= 0.0005) partes.push(`${cual} no subió: perdiste ${pct(-real)} de poder de compra.`)
+    else if (diferencia >= 0) partes.push(`${cual} subió ${pct(variacion)}: le ganaste a la inflación.`)
+    else partes.push(`${cual} subió ${pct(variacion)}, menos que los precios: perdiste ${pct(-real)} de poder de compra.`)
   }
   if (a.desdeAumento) {
     partes.push(`Desde tu último aumento (${mes(a.desdeAumento.periodo)}) los precios subieron ${pct(a.desdeAumento.inflacion)}: tu sueldo compra ${pct(a.desdeAumento.perdida)} menos.`)

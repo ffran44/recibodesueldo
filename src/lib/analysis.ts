@@ -1,6 +1,6 @@
 import type { DatosRecibo } from './types'
 import { totalesEfectivos } from './audit'
-import { mesesEntre, redondear } from './format'
+import { mesesEntre, redondear, sumarMeses } from './format'
 
 /** IPC por período YYYY-MM */
 export type SerieMensual = Map<string, number>
@@ -13,6 +13,15 @@ export function valorIpc(ipc: SerieMensual, periodo: string) {
   const previos = [...ipc.keys()].filter((k) => k <= periodo).sort()
   return previos.length ? ipc.get(previos[previos.length - 1])! : null
 }
+
+/** A mes vencido: el sueldo de un mes se cobra y se gasta en el mes siguiente */
+export const mesDeGasto = (periodo: string) => sumarMeses(periodo, 1)
+
+/**
+ * IPC contra el que se compara el sueldo de un período: el del mes en que se gasta.
+ * null si INDEC todavía no lo publicó (la inflación de octubre le pega al sueldo de septiembre).
+ */
+export const ipcDeSueldo = (ipc: SerieMensual, periodo: string) => ipc.get(mesDeGasto(periodo)) ?? null
 
 export function ultimoPeriodo(serie: SerieMensual) {
   return [...serie.keys()].sort().at(-1) ?? null
@@ -60,7 +69,7 @@ export function serieSalarial(
   return [...porPeriodo.entries()]
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([periodo, { neto, bruto, fecha }]) => {
-      const ipcMes = ipc ? valorIpc(ipc, periodo) : null
+      const ipcMes = ipc ? ipcDeSueldo(ipc, periodo) : null
       const of = oficial ? cotizacionAl(oficial, fecha) : null
       const bl = blue ? cotizacionAl(blue, fecha) : null
       return {
@@ -84,17 +93,16 @@ export interface Comparacion {
 }
 
 export function contraInflacion(serie: PuntoSerie[], ipc: SerieMensual, meses?: number): Comparacion | null {
-  if (serie.length < 2) return null
-  const ultimo = serie[serie.length - 1]
+  // Solo los sueldos cuya inflación ya se publicó
+  const publicados = serie.filter((p) => ipcDeSueldo(ipc, p.periodo) != null)
+  if (publicados.length < 2) return null
+  const ultimo = publicados[publicados.length - 1]
   const primero = meses
-    ? [...serie].reverse().find((p) => mesesEntre(p.periodo, ultimo.periodo) >= meses) ?? serie[0]
-    : serie[0]
+    ? [...publicados].reverse().find((p) => mesesEntre(p.periodo, ultimo.periodo) >= meses) ?? publicados[0]
+    : publicados[0]
   if (primero === ultimo) return null
-  const i0 = valorIpc(ipc, primero.periodo)
-  const i1 = valorIpc(ipc, ultimo.periodo)
-  if (!i0 || !i1) return null
   const variacionNominal = ultimo.neto / primero.neto - 1
-  const inflacion = i1 / i0 - 1
+  const inflacion = ipcDeSueldo(ipc, ultimo.periodo)! / ipcDeSueldo(ipc, primero.periodo)! - 1
   return { desde: primero.periodo, hasta: ultimo.periodo, variacionNominal, inflacion, variacionReal: (1 + variacionNominal) / (1 + inflacion) - 1 }
 }
 

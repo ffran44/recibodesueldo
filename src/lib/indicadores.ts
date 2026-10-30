@@ -1,6 +1,6 @@
 import type { DatosRecibo } from './types'
 import { totalesEfectivos } from './audit'
-import { ultimoPeriodo, valorIpc, type PuntoSerie, type SerieMensual } from './analysis'
+import { ipcDeSueldo, mesDeGasto, ultimoPeriodo, type PuntoSerie, type SerieMensual } from './analysis'
 import { redondear, sumarMeses } from './format'
 
 /** 'todo', últimos N meses ('u12') o un año ('a2026') */
@@ -80,16 +80,15 @@ export interface PuntoBrecha {
 }
 
 export function brechaInflacion(serie: PuntoSerie[], ipc: SerieMensual): PuntoBrecha[] {
-  const primero = serie[0]
-  const ipc0 = primero ? valorIpc(ipc, primero.periodo) : null
-  if (!primero || !ipc0) return []
+  const publicados = serie.filter((p) => ipcDeSueldo(ipc, p.periodo) != null)
+  const primero = publicados[0]
+  if (!primero) return []
+  const ipc0 = ipcDeSueldo(ipc, primero.periodo)!
   let acumulado = 0
-  return serie.flatMap((p) => {
-    const ipcMes = valorIpc(ipc, p.periodo)
-    if (!ipcMes) return []
-    const diferencia = redondear(p.neto - (primero.neto * ipcMes) / ipc0)
+  return publicados.map((p) => {
+    const diferencia = redondear(p.neto - (primero.neto * ipcDeSueldo(ipc, p.periodo)!) / ipc0)
     acumulado = redondear(acumulado + diferencia)
-    return [{ periodo: p.periodo, diferencia, acumulado }]
+    return { periodo: p.periodo, diferencia, acumulado }
   })
 }
 
@@ -97,17 +96,17 @@ export interface PuntoAumento {
   periodo: string
   /** Variación del neto respecto del recibo anterior */
   aumento: number
-  /** Inflación del mismo lapso */
-  inflacion: number
+  /** Inflación de los meses en que se gastaron esos sueldos; null si todavía no se publicó */
+  inflacion: number | null
 }
 
 export function aumentosVsInflacion(serie: PuntoSerie[], ipc: SerieMensual): PuntoAumento[] {
   return serie.slice(1).flatMap((p, i) => {
     const ant = serie[i]
-    const i0 = valorIpc(ipc, ant.periodo)
-    const i1 = valorIpc(ipc, p.periodo)
-    if (!i0 || !i1 || ant.neto <= 0) return []
-    return [{ periodo: p.periodo, aumento: p.neto / ant.neto - 1, inflacion: i1 / i0 - 1 }]
+    if (ant.neto <= 0) return []
+    const i0 = ipcDeSueldo(ipc, ant.periodo)
+    const i1 = ipcDeSueldo(ipc, p.periodo)
+    return [{ periodo: p.periodo, aumento: p.neto / ant.neto - 1, inflacion: i0 && i1 ? i1 / i0 - 1 : null }]
   })
 }
 
@@ -139,15 +138,41 @@ export function detectarAumentos(recibos: DatosRecibo[], umbral = 0.01) {
   })
 }
 
+/**
+ * Inflación que le pega a un aumento: desde el nivel de precios del mes del sueldo hasta el mes
+ * del aumento siguiente (o el último dato publicado). A mes vencido, el sueldo de agosto se gasta
+ * en septiembre, así que la inflación de septiembre ya cuenta.
+ * null si todavía no se publicó: comparar un mes consigo mismo daría un 0% engañoso.
+ */
+export function inflacionTrasAumento(aumentos: { periodo: string }[], i: number, ipc: SerieMensual) {
+  const ultimo = ultimoPeriodo(ipc)
+  if (!ultimo) return null
+  const desde = aumentos[i].periodo
+  const siguiente = aumentos[i + 1]?.periodo ?? ultimo
+  const hasta = siguiente > ultimo ? ultimo : siguiente
+  if (desde >= hasta) return null
+  const i0 = ipc.get(desde)
+  const i1 = ipc.get(hasta)
+  return i0 && i1 ? i1 / i0 - 1 : null
+}
+
 export function desdeUltimoAumento(recibos: DatosRecibo[], ipc: SerieMensual) {
   const ultimo = detectarAumentos(recibos).at(-1)
   const hasta = ultimoPeriodo(ipc)
   if (!ultimo || !hasta) return null
-  const i0 = valorIpc(ipc, ultimo.periodo)
-  const i1 = valorIpc(ipc, hasta)
-  if (!i0 || !i1) return null
-  const inflacion = i1 / i0 - 1
-  return { periodo: ultimo.periodo, variacion: ultimo.variacion, hasta, inflacion, perdidaPoderCompra: 1 - 1 / (1 + inflacion) }
+  // Pendiente: todavía no se publicó la inflación del mes en que se gasta ese sueldo
+  const i0 = ipc.get(ultimo.periodo)
+  const pendiente = ultimo.periodo >= hasta || !i0
+  const inflacion = pendiente ? 0 : ipc.get(hasta)! / i0 - 1
+  return {
+    periodo: ultimo.periodo,
+    variacion: ultimo.variacion,
+    desde: mesDeGasto(ultimo.periodo),
+    hasta,
+    pendiente,
+    inflacion,
+    perdidaPoderCompra: 1 - 1 / (1 + inflacion),
+  }
 }
 
 /** Cuánto habría que cobrar con los precios de hoy para igualar el mejor mes */
@@ -156,8 +181,8 @@ export function netoParaMantener(serie: PuntoSerie[], ipc: SerieMensual) {
   const hoy = ultimoPeriodo(ipc)
   if (conReal.length < 2 || !hoy) return null
   const mejor = conReal.reduce((m, p) => (p.netoReal! > m.netoReal! ? p : m))
-  const i0 = valorIpc(ipc, mejor.periodo)
-  const i1 = valorIpc(ipc, hoy)
+  const i0 = ipcDeSueldo(ipc, mejor.periodo)
+  const i1 = ipc.get(hoy)
   if (!i0 || !i1) return null
   const monto = redondear((mejor.neto * i1) / i0)
   const ultimo = serie[serie.length - 1]
@@ -203,7 +228,7 @@ export interface FilaMatriz {
   valores: (number | null)[]
   /** Variación contra el mes anterior */
   variaciones: (number | null)[]
-  /** Variación menos la inflación del mes, en puntos: > 0 le ganó */
+  /** Variación menos la inflación del mes en que se gasta ese sueldo, en puntos: > 0 le ganó */
   vsInflacion: (number | null)[]
 }
 
@@ -233,8 +258,8 @@ export function matrizConceptos(recibos: DatosRecibo[], ipc?: SerieMensual) {
     })
     fila.vsInflacion = fila.variaciones.map((v, i) => {
       if (v == null || !ipc) return null
-      const i0 = valorIpc(ipc, periodos[i - 1])
-      const i1 = valorIpc(ipc, periodos[i])
+      const i0 = ipcDeSueldo(ipc, periodos[i - 1])
+      const i1 = ipcDeSueldo(ipc, periodos[i])
       return i0 && i1 ? v - (i1 / i0 - 1) : null
     })
   }

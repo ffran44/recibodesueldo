@@ -6,7 +6,7 @@ import { HojaRecibo } from '../componentes/HojaRecibo'
 import { Icono } from '../componentes/Icono'
 import { ListaChequeos } from '../componentes/ListaChequeos'
 import { estadoGeneral, totalesEfectivos } from '../lib/audit'
-import { antiguedad, cotizacionAl, fechaReferencia, ultimoPeriodo, valorIpc } from '../lib/analysis'
+import { antiguedad, cotizacionAl, fechaReferencia, ipcDeSueldo, mesDeGasto, ultimoPeriodo } from '../lib/analysis'
 import { anteriorDe, borrarRecibo, db } from '../lib/db'
 import { fechaLarga, nombrePeriodo, pesos, porcentaje } from '../lib/format'
 import { navegar } from '../lib/ruta'
@@ -77,8 +77,9 @@ export function Detalle({ id, editando }: { id: string; editando: boolean }) {
   const previos = new Map(anterior?.conceptos.map((c) => [clave(c.nombre), c.importe]))
 
   const ultimoIpc = eco.ipc ? ultimoPeriodo(eco.ipc) : null
-  const ipcRecibo = eco.ipc ? valorIpc(eco.ipc, recibo.periodo) : null
-  const netoHoy = eco.ipc && ultimoIpc && ipcRecibo ? (t.neto * valorIpc(eco.ipc, ultimoIpc)!) / ipcRecibo : null
+  // A mes vencido: el valor del sueldo se mide con los precios del mes en que se gasta
+  const ipcRecibo = eco.ipc ? ipcDeSueldo(eco.ipc, recibo.periodo) : null
+  const netoHoy = eco.ipc && ultimoIpc && ipcRecibo ? (t.neto * eco.ipc.get(ultimoIpc)!) / ipcRecibo : null
   const oficial = eco.oficial ? cotizacionAl(eco.oficial, fechaReferencia(recibo)) : null
   const blue = eco.blue ? cotizacionAl(eco.blue, fechaReferencia(recibo)) : null
 
@@ -111,7 +112,7 @@ export function Detalle({ id, editando }: { id: string; editando: boolean }) {
             <section className="seccion">
               <span className="rotulo">Cuánto vale este sueldo</span>
               <dl className="valores hoja">
-                {netoHoy != null && ultimoIpc && ultimoIpc !== recibo.periodo && (
+                {netoHoy != null && ultimoIpc && ultimoIpc !== mesDeGasto(recibo.periodo) && (
                   <div>
                     <dt>En pesos de {nombrePeriodo(ultimoIpc)}</dt>
                     <dd className="cifra">{pesos(netoHoy)}</dd>

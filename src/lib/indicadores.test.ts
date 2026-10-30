@@ -11,6 +11,7 @@ import {
   detectarAumentos,
   filtrarPorRango,
   indiceBase100,
+  inflacionTrasAumento,
   matrizConceptos,
   netoParaMantener,
   resumenAnual,
@@ -24,12 +25,13 @@ function escalado(periodo: string, f: number, tipo: DatosRecibo['tipoLiquidacion
   return r
 }
 
-// Precios: +10% en febrero, +0% en marzo, +10% en abril
+// A mes vencido: el sueldo de enero se gasta en febrero, y así.
+// Precios: +10% en marzo, +0% en abril, +10% en mayo
 const ipc = new Map([
-  ['2026-01', 100],
-  ['2026-02', 110],
+  ['2026-02', 100],
   ['2026-03', 110],
-  ['2026-04', 121],
+  ['2026-04', 110],
+  ['2026-05', 121],
 ])
 // Sueldo: igual en febrero, +20% en marzo (aumento), igual en abril
 const recibos = [escalado('2026-01', 1), escalado('2026-02', 1), escalado('2026-03', 1.2), escalado('2026-04', 1.2)]
@@ -91,6 +93,24 @@ describe('aumentos', () => {
     expect(d.periodo).toBe('2026-03')
     expect(d.inflacion).toBeCloseTo(0.1, 6)
     expect(d.perdidaPoderCompra).toBeCloseTo(1 - 1 / 1.1, 6)
+  })
+})
+
+describe('inflacionTrasAumento', () => {
+  const aumentos = [{ periodo: '2026-02' }, { periodo: '2026-04' }]
+  it('cuenta la inflación del mes en que se gasta ese sueldo', () => {
+    // Febrero se gasta en marzo: la suba de marzo (100 a 110) le pega
+    expect(inflacionTrasAumento([{ periodo: '2026-02' }, { periodo: '2026-03' }], 0, ipc)).toBeCloseTo(0.1, 6)
+  })
+  it('mide hasta el aumento siguiente', () => {
+    expect(inflacionTrasAumento(aumentos, 0, ipc)).toBeCloseTo(0.1, 6)
+  })
+  it('mide hasta el último dato si no hubo otro aumento', () => {
+    expect(inflacionTrasAumento(aumentos, 1, ipc)).toBeCloseTo(0.1, 6)
+  })
+  it('sin la inflación del mes de gasto devuelve null, no 0%', () => {
+    expect(inflacionTrasAumento([{ periodo: '2026-05' }], 0, ipc)).toBeNull()
+    expect(inflacionTrasAumento([{ periodo: '2026-09' }], 0, ipc)).toBeNull()
   })
 })
 

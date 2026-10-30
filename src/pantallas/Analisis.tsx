@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import { Titulo } from '../componentes/Titulo'
 import { Barras, Lineas, SinDatos, Tarjeta } from '../componentes/graficos'
 import { MapaConceptos } from '../componentes/MapaConceptos'
-import { contraInflacion, estimarAguinaldo, serieConcepto, serieSalarial, ultimoPeriodo, valorIpc, type PuntoSerie } from '../lib/analysis'
+import { contraInflacion, estimarAguinaldo, ipcDeSueldo, mesDeGasto, serieConcepto, serieSalarial, ultimoPeriodo, type PuntoSerie } from '../lib/analysis'
 import { nombrePeriodo, pesos, pesosCorto, porcentaje } from '../lib/format'
 import {
   aumentosVsInflacion,
@@ -13,6 +13,7 @@ import {
   detectarAumentos,
   filtrarPorRango,
   indiceBase100,
+  inflacionTrasAumento,
   netoParaMantener,
   resumenAnual,
   soloMensuales,
@@ -127,24 +128,24 @@ function Resumen({ recibos, todos, eco, serie }: { recibos: Recibo[]; todos: Rec
             detalle={`Sumando cada mes contra el poder de compra de ${nombrePeriodo(brecha[0].periodo, true)}`}
           />
         )}
-        {ultimoAumento && ultimoAumento.periodo >= ultimoAumento.hasta && (
+        {ultimoAumento?.pendiente && (
           <Tarjeta
             color="var(--rosa)"
             icono="calendario"
             titulo="Último aumento"
             valor={porcentaje(ultimoAumento.variacion, true)}
             tono="bien"
-            detalle={`en ${nombrePeriodo(ultimoAumento.periodo, true)}. INDEC todavía no publicó la inflación de los meses siguientes.`}
+            detalle={`en tu sueldo de ${nombrePeriodo(ultimoAumento.periodo, true)}, que se gasta en ${nombrePeriodo(ultimoAumento.desde, true)}. INDEC todavía no publicó esa inflación.`}
           />
         )}
-        {ultimoAumento && ultimoAumento.periodo < ultimoAumento.hasta && (
+        {ultimoAumento && !ultimoAumento.pendiente && (
           <Tarjeta
             color="var(--rosa)"
             icono="calendario"
             titulo="Desde tu último aumento"
             valor={porcentaje(ultimoAumento.inflacion, true)}
             tono={ultimoAumento.inflacion > 0.02 ? 'mal' : undefined}
-            detalle={`de inflación desde ${nombrePeriodo(ultimoAumento.periodo, true)} (aumento de ${porcentaje(ultimoAumento.variacion)}). Tu sueldo compra ${porcentaje(ultimoAumento.perdidaPoderCompra)} menos.`}
+            detalle={`de inflación desde tu aumento de ${nombrePeriodo(ultimoAumento.periodo, true)} (${porcentaje(ultimoAumento.variacion, true)}), contando el mes en que lo gastaste. Sin nuevo aumento, compra ${porcentaje(ultimoAumento.perdidaPoderCompra)} menos.`}
           />
         )}
         {mantener && mantener.faltante > 0 && (
@@ -179,7 +180,7 @@ function Resumen({ recibos, todos, eco, serie }: { recibos: Recibo[]; todos: Rec
               ...(eco.ipc ? [{ clave: 'netoReal', nombre: `En pesos de ${ultimoIpc ? nombrePeriodo(ultimoIpc, true) : 'hoy'}`, color: tk['--serie-real'] }] : []),
             ]}
           />
-          <p className="nota">Ajustado por IPC nacional (INDEC). Si la línea violeta baja, tu sueldo compra menos que antes.</p>
+          <p className="nota">Cobrás a mes vencido: cada sueldo se compara con la inflación del mes en que lo gastás (el de septiembre, con la de octubre). Si la línea violeta baja, tu sueldo compra menos que antes.</p>
           <TablaSerie serie={serie} />
         </section>
       ) : (
@@ -236,10 +237,9 @@ function Inflacion({ todos, eco, serie }: { todos: Recibo[]; eco: Economia; seri
   const ipc = eco.ipc
   const indice = indiceBase100(serie)
   const brecha = brechaInflacion(serie, ipc)
-  const mes = aumentosVsInflacion(serie, ipc).map((a) => ({ ...a, aumento: a.aumento * 100, inflacion: a.inflacion * 100 }))
+  const mes = aumentosVsInflacion(serie, ipc).map((a) => ({ ...a, aumento: a.aumento * 100, inflacion: a.inflacion == null ? null : a.inflacion * 100 }))
   const aumentos = detectarAumentos(todos)
   const basico = conceptoBasico(todos)
-  const ultimoIpc = ultimoPeriodo(ipc)!
 
   return (
     <>
@@ -268,10 +268,10 @@ function Inflacion({ todos, eco, serie }: { todos: Recibo[]; eco: Economia; seri
             formatoEje={(n) => `${n}%`}
             series={[
               { clave: 'aumento', nombre: 'Variación de tu neto', color: tk['--serie-nominal'] },
-              { clave: 'inflacion', nombre: 'Inflación del mes', color: tk['--serie-ref'] },
+              { clave: 'inflacion', nombre: 'Inflación del mes siguiente', color: tk['--serie-ref'] },
             ]}
           />
-          <p className="nota">Cuando la barra gris supera a la verde, ese mes perdiste poder de compra.</p>
+          <p className="nota">Cada sueldo contra la inflación del mes en que se gasta. Cuando la barra gris supera a la verde, perdiste poder de compra.</p>
         </section>
 
         <section className="seccion">
@@ -296,19 +296,16 @@ function Inflacion({ todos, eco, serie }: { todos: Recibo[]; eco: Economia; seri
           {aumentos.length ? (
             <ol className="linea-tiempo hoja">
               {aumentos.map((a, i) => {
-                const hasta = aumentos[i + 1]?.periodo ?? ultimoIpc
-                const i0 = valorIpc(ipc, a.periodo)
-                const i1 = valorIpc(ipc, hasta)
-                const inflacion = i0 && i1 ? i1 / i0 - 1 : null
+                const inflacion = inflacionTrasAumento(aumentos, i, ipc)
                 return (
                   <li key={a.periodo}>
                     <span className="libro-periodo">{nombrePeriodo(a.periodo)}</span>
                     <span className="cifra haber">{porcentaje(a.variacion, true)}</span>
-                    {inflacion != null && (
-                      <span className="nota">
-                        {i + 1 < aumentos.length ? 'Hasta el siguiente aumento' : 'Desde entonces'}, la inflación fue {porcentaje(inflacion)}
-                      </span>
-                    )}
+                    <span className="nota">
+                      {inflacion == null
+                        ? `Este sueldo se gasta en ${nombrePeriodo(mesDeGasto(a.periodo))}: INDEC todavía no publicó esa inflación.`
+                        : `${i + 1 < aumentos.length ? 'Hasta el siguiente aumento' : 'Desde entonces'}, la inflación fue ${porcentaje(inflacion)}.`}
+                    </span>
                   </li>
                 )
               })}
@@ -441,9 +438,9 @@ function Conceptos({ recibos, eco }: { recibos: Recibo[]; eco: Economia }) {
   const elegido = nombres.includes(concepto) ? concepto : (conceptoBasico(recibos) ?? nombres[0] ?? '')
   const evolucion = elegido ? serieConcepto(recibos, elegido) : []
   const base = evolucion[0]
-  const i0 = base && eco.ipc ? valorIpc(eco.ipc, base.periodo) : null
+  const i0 = base && eco.ipc ? ipcDeSueldo(eco.ipc, base.periodo) : null
   const conInflacion = evolucion.map((p) => {
-    const i1 = eco.ipc ? valorIpc(eco.ipc, p.periodo) : null
+    const i1 = eco.ipc ? ipcDeSueldo(eco.ipc, p.periodo) : null
     return { ...p, siguiendoInflacion: i0 && i1 ? (base.importe * i1) / i0 : null }
   })
 

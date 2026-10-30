@@ -1,14 +1,15 @@
 import { describe, expect, it } from 'vitest'
-import { contraInflacion, cotizacionAl, estimarAguinaldo, serieSalarial } from './analysis'
+import { contraInflacion, cotizacionAl, estimarAguinaldo, ipcDeSueldo, mesDeGasto, serieSalarial } from './analysis'
 import { reciboDocente, variante } from './fixtures'
 import { parsearMonto, sumarMeses } from './format'
 
 const julio = variante(reciboDocente, { periodo: '2026-07', fechaPago: '2026-08-05' })
 julio.totales.neto = 650000
 julio.totales.remunerativo = 800000 // mejor remuneración del semestre
+// A mes vencido: el sueldo de julio se gasta en agosto y el de agosto en septiembre
 const ipc = new Map([
-  ['2026-07', 12076.3937],
-  ['2026-08', 12276.766],
+  ['2026-08', 12076.3937],
+  ['2026-09', 12276.766],
 ])
 
 describe('serieSalarial', () => {
@@ -25,6 +26,25 @@ describe('serieSalarial', () => {
     expect(serie[0].netoReal).toBeCloseTo((650000 * 12276.766) / 12076.3937, 1)
     // Cotización del día hábil anterior más cercano a la fecha de pago
     expect(serie[1].usdOficial).toBeCloseTo(746193.37 / 1540, 2)
+  })
+})
+
+describe('sueldo a mes vencido', () => {
+  it('compara cada sueldo con los precios del mes en que se gasta', () => {
+    expect(mesDeGasto('2026-09')).toBe('2026-10')
+    expect(mesDeGasto('2026-12')).toBe('2027-01')
+    expect(ipcDeSueldo(ipc, '2026-08')).toBe(12276.766)
+  })
+  it('no inventa valor real si todavía no se publicó esa inflación', () => {
+    const septiembre = variante(reciboDocente, { periodo: '2026-09' })
+    const serie = serieSalarial([reciboDocente, septiembre], { ipc })
+    expect(serie[1].periodo).toBe('2026-09')
+    expect(serie[1].netoReal).toBeNull()
+  })
+  it('contra la inflación llega hasta el último sueldo con dato publicado', () => {
+    const septiembre = variante(reciboDocente, { periodo: '2026-09' })
+    const c = contraInflacion(serieSalarial([julio, reciboDocente, septiembre], { ipc }), ipc)!
+    expect(c.hasta).toBe('2026-08')
   })
 })
 

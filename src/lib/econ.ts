@@ -3,7 +3,7 @@ import { descargarIpc } from './ipc'
 import type { SerieDiaria, SerieMensual } from './analysis'
 
 export async function cargarIpc(): Promise<SerieMensual> {
-  return new Map(await conCache('ipc', 24, descargarIpc))
+  return new Map(await conCache('ipc-completo', 24, descargarIpc))
 }
 
 export type Casa = 'oficial' | 'blue' | 'bolsa'
